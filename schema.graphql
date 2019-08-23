@@ -1,0 +1,76 @@
+type Device {
+  id: ID! @id
+  createdAt: DateTime! @createdAt
+  powerRatings: [DevicePowerRating]
+  rvnShares: [shareData]
+  workUnits: [workUnit]
+  wcgid: String @unique
+  rvnid: String @unique
+  wcgKey: String
+}
+
+type shareData {
+  id: ID! @id
+  createdAt: DateTime! @createdAt
+  shareId:Int!
+  time: DateTime!
+  valid: Boolean! @default(value:true)
+  difficulty:Float!
+  shareDifficulty:Float!
+  device: Device
+  shareHash: String! @unique
+  power: Float
+}
+
+type DevicePowerRating {
+  id: ID! @id
+  createdAt: DateTime! @createdAt
+  power: Float!
+  device: Device
+  rvnPower: Float
+  boincPower: Float
+}
+
+type CronJob {
+  id: ID! @id
+  createdAt: DateTime! @createdAt
+  name: String! @unique
+  enabled: Boolean! @default(value:true)
+  interval: String
+  runs: [CronRun!]!
+}
+
+type CronRun {
+  id: ID! @id 
+  createdAt: DateTime! @createdAt
+  job: CronJob!
+  runtime: Int
+  results: Json
+  errors: Json
+}
+
+type workUnit {
+  id: ID! @id
+  createdAt: DateTime! @createdAt
+  appName: String
+  claimedCredit: Float
+  cpuTime: Float
+  elapsedTime: Float
+  exitStatus: Int
+  grantedCredit: Float
+  deviceId: Int
+  deviceName: String
+  workUnitId: Int @unique
+  resultId: Int
+  name: String
+  outcome: Int
+  receivedTime: DateTime
+  reportDeadline: DateTime
+  sentTime: DateTime
+  serverState: Int
+  validateState: Int
+  fileDeleteState: Int
+  device: Device
+  weight: Float
+  power: Float
+}
