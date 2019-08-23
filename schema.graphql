@@ -34,15 +34,16 @@ type DevicePowerRating {
 type CronJob {
   id: ID! @id
   createdAt: DateTime! @createdAt
+  updatedAt: DateTime! @updatedAt
   name: String! @unique
   enabled: Boolean! @default(value:true)
-  interval: String
   runs: [CronRun!]!
 }
 
 type CronRun {
   id: ID! @id 
   createdAt: DateTime! @createdAt
+  updatedAt: DateTime! @updatedAt
   job: CronJob!
   runtime: Int
   results: Json
@@ -71,6 +72,5 @@ type workUnit {
   validateState: Int
   fileDeleteState: Int
   device: Device
-  weight: Float
   power: Float
 }

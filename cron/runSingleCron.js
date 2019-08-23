@@ -7,7 +7,7 @@ async function init(){
     cron.run(process.argv[2])
   } catch (error) {
     console.log(error)
-    await require('./setupCronJobs')()
+    await require('./registerCronJobs')()
     init()
   }
 }
