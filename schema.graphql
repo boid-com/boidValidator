@@ -1,5 +1,8 @@
 type Device {
   id: ID! @id
+  power: Float
+  rvnPower: Float
+  boincPower: Float
   createdAt: DateTime! @createdAt
   powerRatings: [DevicePowerRating]
   rvnShares: [shareData]
@@ -25,10 +28,12 @@ type shareData {
 type DevicePowerRating {
   id: ID! @id
   createdAt: DateTime! @createdAt
+  updatedAt: DateTime! @updatedAt
   power: Float!
   device: Device
   rvnPower: Float
   boincPower: Float
+  roundTime: DateTime
 }
 
 type CronJob {
