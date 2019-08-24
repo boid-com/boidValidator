@@ -2,15 +2,18 @@ const ax = require('axios')
 const db = require('../../db.js')
 const env = require('../../.env.js')
 const sleep = ms => new Promise(res => setTimeout(res, ms))
+const logger = require('logging').default('getRvnWork')
 
 ax.defaults.headers.common['password'] = env.rvnPW
 ax.defaults.headers.common['database'] = 'yiimpfrontend'
 ax.defaults.headers.common['Content-Type'] = 'application/json'
 ax.defaults.baseURL = 'http://rvn.boid.com:4444/sql'
 
-console.log(ax.defaults.baseURL)
+logger.info(ax.defaults.baseURL)
 var hash = require('object-hash')
-
+// const logger = require('logging').default('getRvnWork')
+// logger.info = logger.info
+// logger.error = logger.error
 var workers
 
 async function createShareData(share,deviceId){
@@ -44,7 +47,7 @@ async function doQuery(worker) {
     try {
       const existingMiner = await db.gql(`{device(where:{rvnid:"${worker.worker}"})
       {id rvnShares(orderBy:time_DESC first:1){time}}}`)
-      // console.log(existingMiner)
+      // logger.info(existingMiner)
       if (!existingMiner) return res()
       var query = `
         select id, userid, time, error, valid, difficulty, share_diff
@@ -54,29 +57,28 @@ async function doQuery(worker) {
       `
       query = query.replace(/(\r\n|\n|\r)/gm, "")
       try {
-        console.log('Getting RvnShares...')
+        logger.info('Getting RvnShares...')
         var shares = (await ax.post('',{query})).data
-        console.log('Downloaded RvnShares:',shares.length)
+        logger.info('Downloaded RvnShares:',shares.length)
       } catch (error) {
-        console.error(error)      
-        console.log('sleeping and will try again')
+        logger.error(error)      
+        logger.info('sleeping and will try again')
         var shares = (await ax.post('',{query})).data
         await sleep(5000)
       }
       if (shares.length === 0) return res()
-      console.log('Writing RvnShares to DB...')
+      logger.info('Writing RvnShares to DB...')
       for (share of shares){
         await createShareData(share,worker.worker)
       }
-      console.log('Finished writing RvnShares to DB')
-
+      logger.info('Finished writing RvnShares to DB')
       res()
     } catch (error) {
-      console.log(error)
+      logger.info(error)
       rej(error)
     }
 
-  }).catch(console.error)
+  }).catch(logger.error)
 }
 
 
@@ -85,20 +87,20 @@ async function init(){
     workers = (await ax.post('',{
       query:`select id, userid, time, difficulty, ip, name, worker from workers`
     })).data.filter(el => el.worker != '')
-    console.log('')
-    console.log('Found',workers.length,'rvnWorkers')
+    logger.info('')
+    logger.info('Found',workers.length,'rvnWorkers')
     for (worker of workers){
-      console.log('')
-      console.log('RvnDevice:',worker.worker)
+      logger.info('')
+      logger.info('RvnDevice:',worker.worker)
       await doQuery(worker)
     }
     return {results:{workers},errors:null}
   } catch (error) {
-    console.log(error)
+    logger.info(error)
     return {results:null,errors:[error]}
   }
 }
 module.exports = init
-if (require.main === module && process.argv[2] === 'dev') init().catch(console.log)
+if (require.main === module && process.argv[2] === 'dev') init().catch(logger.info)
 
-// init().catch(console.log) 
+// init().catch(logger.info) 

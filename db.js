@@ -1,6 +1,8 @@
 const { GraphQLClient } = require('graphql-request')
 const env = require('./.env')
 const sleep = ms => new Promise(res => setTimeout(res, ms))
+const logger = require('logging').default('db')
+
 var gqlEndpoint 
 if (env.stage === 'prod') {
   if (env.local) gqlEndpoint = 'http://localhost:4466'
@@ -8,7 +10,7 @@ if (env.stage === 'prod') {
 }
 else if (env.local) gqlEndpoint = 'http://localhost:4477'
 else gqlEndpoint = 'https://api.boid.com/dev'
-console.log(env.stage,gqlEndpoint)
+logger.info(env.stage,gqlEndpoint)
 const remoteEndpoint = 'https://api.boid.com/prisma'
 const token = env.prismaJwt
 const client = new GraphQLClient(gqlEndpoint, {
@@ -30,8 +32,8 @@ async function doMany(commands,db){
   for (command of commands){
     i += 0.1
     const sleeping = parseInt(10 + i)
-    console.log('DoMany Sleeping:',sleeping)
-    await gql(command.cmd,command.vars,null,db).catch(console.error)
+    // logger.info('DoMany Sleeping:',sleeping)
+    await gql(command.cmd,command.vars,null,db).catch(logger.error)
     await sleep(sleeping)
   }
 }
@@ -45,7 +47,7 @@ const gql = async(gql,vars,type,db) => {
       const result = await db.request(gql,vars)
       return result[type]
     } catch (error) {
-      // console.log('got GQL ERROR',error)
+      // logger.info('got GQL ERROR',error)
       return Promise.reject(error)      
     }
 }
@@ -58,7 +60,7 @@ const mutation = async(gqli,vars,type,db) => {
 async function batch(type,query,vars,batchSize,thisClient) {
   if (!thisClient) var client = dbClient
   else var client = thisClient 
-  // console.log(client)
+  // logger.info(client)
   if (!batchSize) batchSize = 1000
   var results = []
   var i = 0
@@ -76,12 +78,12 @@ async function batch(type,query,vars,batchSize,thisClient) {
     }
   }
   await loop()
-  // console.log('\nBatchLength:',results.length)
+  // logger.info('\nBatchLength:',results.length)
   return results
 }
 
 var getData = async function(type,query,vars,client){
-  var data = await client.request(query,vars).catch(console.error)
+  var data = await client.request(query,vars).catch(logger.error)
   if (typeof type != "string"){
     if (data[type[0]][type[1]].length > 0){
       return data[type[0]][type[1]]

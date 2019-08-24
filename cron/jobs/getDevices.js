@@ -1,6 +1,7 @@
 const db = require('../../db')
 const ax = require('axios')
 const env = require('../../.env.js')
+const logger = require('logging').default('getDevices')
 
 async function addDevice(device){
   try {
@@ -16,15 +17,17 @@ async function addDevice(device){
       ){id}}`)
     return result
   } catch (error) {
-    console.error(error)
+    logger.error(error)
   }
 }
 async function init(){
-  const devices = (await ax.post( env.boidAPI+'/getDevices')).data
-  console.log('found registered devices',devices.length)
+  const devices = (await ax.post( env.boidAPI+'getDevices')).data
+  logger.info('')
+  logger.info('found registered devices',devices.length)
+  logger.info('Upserting devices into DB...')
   for (device of devices){await addDevice(device)}
-  console.log('finished upserting devices')
+  logger.info('finished upserting devices')
   return {results:{deviceCount:devices.length}}
 }
-if (require.main === module && process.argv[2] === 'dev') init().catch(console.log)
+if (require.main === module && process.argv[2] === 'dev') init().catch(logger.info)
 module.exports = init

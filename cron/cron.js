@@ -1,9 +1,10 @@
 const db = require('../db.js')
+const logger = require('logging').default('cron')
 
 async function run(jobName){
   let run
   try {
-    console.log('starting',jobName)
+    logger.info('starting',jobName)
     const existingJob = await db.gql(`{cronJob(where:{name:"${jobName}"}){name}}`)
     if(!existingJob) await db.gql(`mutation{createCronJob(data:{name:"${jobName}"}){name}}`)
     run = await db.gql(`mutation{createCronRun(data:{job:{connect:{name:"${jobName}"}}}){id createdAt}}`)
@@ -14,7 +15,7 @@ async function run(jobName){
       {id}}`,job)
     return {updateRun,runtime,job}
   } catch (error) {
-    console.error(error)
+    logger.error(error)
     if (run){
       await db.gql(`mutation($results:Json $errors:Json){updateCronRun(where:{id:"${run.id}"} 
       data:{results:$results errors:$errors runtime:0})

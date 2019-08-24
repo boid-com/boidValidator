@@ -1,5 +1,6 @@
 const db = require('../../../db.js')
 var ms = require('human-interval')
+const logger = require('logging').default('getBoincPower')
 
 async function parseUnits(workUnits, deviceId, globals) {
   var results = []
@@ -22,27 +23,28 @@ async function parseUnits(workUnits, deviceId, globals) {
 async function boincFindPower(devices,globals) {
   var i = 0
   var powerRatings = {}
-  console.log('num Boinc devices',devices.length)
+  logger.info('num Boinc devices',devices.length)
   for (var device of devices) {
     try {
       const deviceID = parseInt(device.wcgid)
+      logger.info('Getting Device WU',deviceID)
       var workUnits = (await db.gql(`query($roundStart:DateTime){workUnits( where:{deviceId:${deviceID} receivedTime_gt:$roundStart}
       ){id receivedTime grantedCredit claimedCredit serverState validateState outcome deviceId workUnitId power}}`, 
       {roundStart:globals.round.start}))
       if (!workUnits[0]) {
-        // console.log('Device has no WUs',deviceID)
+        logger.info('No WU Found for this round')
         continue
       }
-      console.log('WorkUnits#:',workUnits.length)
+      logger.info('Found WorkUnits for this round:#:',workUnits.length)
       const parsedUnits = await parseUnits(workUnits, device.id, globals)
-      console.log('')
+      logger.info('')
       const boincPower = parsedUnits
         .filter(el => (el.outcome === 1 && el.validateState === 1))
         .reduce((a, el) => a + el.power, 0)
       if (boincPower === 0) continue
-      powerRatings[device.id] = {boincPower,boincPending}
+      powerRatings[device.id] = {boincPower}
     } catch (error) {
-      console.error(error)
+      logger.error(error)
       continue
     }
   }

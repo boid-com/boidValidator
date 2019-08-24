@@ -1,9 +1,10 @@
 const cron = require('./cron.js')
 const db = require('../db.js')
+const logger = require('logging').default('runSingleCron')
 
 async function init(){
   try {
-    console.log('running...')
+    logger.info('running...',process.argv[2])
     cron.run(process.argv[2])
   } catch (error) {
     console.log(error)
