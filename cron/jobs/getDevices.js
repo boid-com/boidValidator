@@ -1,6 +1,6 @@
 const db = require('../../db')
 const ax = require('axios')
-const env = require('../../.env.js')
+const env = require('../../.env.json')
 const logger = require('logging').default('getDevices')
 
 async function addDevice(device){

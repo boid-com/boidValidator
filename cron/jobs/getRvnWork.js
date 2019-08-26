@@ -1,20 +1,16 @@
 const ax = require('axios')
 const db = require('../../db.js')
-const env = require('../../.env.js')
+const env = require('../../.env.json')
 const sleep = ms => new Promise(res => setTimeout(res, ms))
 const logger = require('logging').default('getRvnWork')
 const ms = require('human-interval')
 
-ax.defaults.headers.common['password'] = env.rvnPW
 ax.defaults.headers.common['database'] = 'yiimpfrontend'
 ax.defaults.headers.common['Content-Type'] = 'application/json'
 ax.defaults.baseURL = 'http://rvn.boid.com:4444/sql'
 
 logger.info(ax.defaults.baseURL)
 var hash = require('object-hash')
-// const logger = require('logging').default('getRvnWork')
-// logger.info = logger.info
-// logger.error = logger.error
 var workers
 
 async function createShareData(share,deviceId){

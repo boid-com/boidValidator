@@ -3,7 +3,7 @@ const db = require('../../db.js')
 const ms = require('human-interval')
 const sleep = ms => new Promise(res => setTimeout(res, ms))
 const saveUnit = require('./util/createWorkUnit.js')
-const env = require('../../.env.js')
+const env = require('../../.env.json')
 const logger = require('logging').default('getBoincWork')
 
 var apiURL = 'https://www.worldcommunitygrid.org/api/members/boid.com/results?code=' + env.wcgKey

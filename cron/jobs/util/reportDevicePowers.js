@@ -1,5 +1,5 @@
 const ecc = require('eosjs-ecc')
-const env = require('../../../.env.js')
+const env = require('../../../.env.json')
 const ax = require('axios')
 const ms = require('human-interval')
 const logger = require('logging').default('reportDevicePowers')
