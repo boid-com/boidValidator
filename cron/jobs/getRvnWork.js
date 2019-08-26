@@ -3,6 +3,7 @@ const db = require('../../db.js')
 const env = require('../../.env.js')
 const sleep = ms => new Promise(res => setTimeout(res, ms))
 const logger = require('logging').default('getRvnWork')
+const ms = require('human-interval')
 
 ax.defaults.headers.common['password'] = env.rvnPW
 ax.defaults.headers.common['database'] = 'yiimpfrontend'
@@ -45,6 +46,7 @@ async function createShareData(share,deviceId){
 async function doQuery(worker) {
   return new Promise(async(res,rej)=>{
     try {
+      const oneHourBack = parseInt((Date.now() - ms(env.lookbackTime))/1000)
       const existingMiner = await db.gql(`{device(where:{rvnid:"${worker.worker}"})
       {id rvnShares(orderBy:time_DESC first:1){time}}}`)
       // logger.info(existingMiner)
@@ -54,7 +56,9 @@ async function doQuery(worker) {
         from shares
         where workerid=${worker.id}
         and coinid=1425
+        and time > ${oneHourBack}
       `
+      // console.log(query)
       query = query.replace(/(\r\n|\n|\r)/gm, "")
       try {
         logger.info('Getting RvnShares...')
@@ -94,7 +98,8 @@ async function init(){
       logger.info('RvnDevice:',worker.worker)
       await doQuery(worker)
     }
-    return {results:{workers},errors:null}
+    logger.info('getRvnWork has finished!')
+    return {results:{totalWorkers:workers.length,workers},errors:null}
   } catch (error) {
     logger.info(error)
     return {results:null,errors:[error]}

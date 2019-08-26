@@ -34,8 +34,8 @@ async function getAccount(apiParams) {
     await updateUnits(data).catch(logger.error)
     data.forEach((el)=>{allData.push(el)}) 
     i += batchSize
-    logger.info('sleeping 10 seconds')
-    await sleep(ms('10 seconds'))
+    logger.info('sleeping 5 seconds')
+    await sleep(ms('5 seconds'))
     await loop(apiParams)    
   }
   await loop(apiParams).catch(logger.error)
@@ -65,7 +65,7 @@ async function init() {
     ModTime = parseInt(ModTime/1000)
     await getAccount(Object.assign(apiParams,{ModTime}))
     logger.info('')
-    logger.info('finished getBoincWork!')
+    logger.info('getBoincWork has finished!')
     return {errors:[],results:{success:true}}
   } catch (error) {
     logger.error(error)

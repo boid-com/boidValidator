@@ -3,10 +3,11 @@ const db = require('../../db.js')
 const getRvnPower = require('./util/getRvnPower')
 const getBoincPower = require('./util/getBoincPower')
 const env = require('../../.env')
-const reflect = p => p.then(v => ({v, status: "fulfilled" }),e => ({e, status: "rejected" }))
+const reflect = p => p.then(data => ({data, status: "fulfilled" }),e => ({e, status: "rejected" }))
 const ax = require('axios')
 const logger = require('logging').default('devicePowerRatings')
 const reportDevicePowers = require('./util/reportDevicePowers')
+const chunkSize = 1
 Array.prototype.shuffle = function() {
   var i = this.length, j, temp;
   if ( i == 0 ) return this;
@@ -35,12 +36,15 @@ async function init(devices) {
     if (!devices){
       globals = (await ax.post(env.boidAPI + 'getGlobals')).data
       globals.round = {}
-      globals.round.end = new Date(round(moment(), moment.duration(1, "hour"), "floor"))
-      globals.round.start = new Date(globals.round.end - globals.roundLength)
+      globals.round.end = new Date(round(moment(), moment.duration(1, "hour"), "floor")).toISOString()
+      globals.round.start = new Date(Date.parse(globals.round.end) - globals.roundLength).toISOString()
       logger.info('Got Globals:',JSON.stringify(globals,null,2))
+      
       var deviceList = await db.gql(`{
-        devices{id wcgid createdAt workUnits(last:1){id} rvnShares(last:1){time}}}`)
-      const chunks = chunk(deviceList.shuffle(),1).filter(el => el)
+        devices(last:100){id wcgid createdAt workUnits(last:1){id} rvnShares(last:1){time}}}`)
+      // var deviceList = [(await db.gql(`{ device ( where:{ id:"cjzp1utgz003o0733lf5tj15o" } ) 
+      // {id wcgid createdAt workUnits(last:1){id} rvnShares(last:1){time}}}`))]
+      const chunks = chunk(deviceList.shuffle(),chunkSize).filter(el => el)
       logger.info('Split devices into Chunks:',chunks.length)
       const results = []
       for(chunk of chunks){
@@ -64,62 +68,75 @@ async function init(devices) {
   logger.info('Updating Power for Devices:', devices.length)
   
   const allResults = await Promise.all([
-    reflect(getBoincPower(devices.filter(el => el.workUnits[0]),globals)),
-    // reflect(getRvnPower(devices.filter(el => el.rvnShares[0]),globals))
+    // reflect(getBoincPower(devices.filter(el => el.workUnits[0]),globals)),
+    reflect(getRvnPower(devices.filter(el => el.rvnShares[0]),globals))
   ])
-  // var boincPowerRatings = {}
-  var rvnPowerRatings = {}
-  var boincPowerRatings = allResults[0].v
-  // var rvnPowerRatings = allResults[1].v
+  var boincPowerRatings = {}
+  // var rvnPowerRatings = {}
+  var boincPowerRatings = allResults[0].data
+  var rvnPowerRatings = allResults[1].data
   // logger.info('RESULTS:',boincPowerRatings,rvnPowerRatings)
   var parsedDevices = []
   for (device of devices){
-    var result = Object.assign({id:device.id,rvnPower:0,boincPower:0,boincPending:0},
-      rvnPowerRatings[device.id],
-      boincPowerRatings[device.id])
-    result.totalPower = result.rvnPower + result.boincPower
-    if (result.totalPower === 0) continue
-    else parsedDevices.push(result) 
-  }
-  var errors = []
-  var results = {updatedDevices:0,totalBoincPower:0,totalBoincPending:0, totalRvnPower:0,boincDevices:0,rvnDevices:0}
-  logger.info('Saving and reporting Power Ratings for this round.')
-  for (device of parsedDevices){
     try {
-      const powerRating = await db.gql(`mutation{
-        createDevicePowerRating(
-          data:{
-            power:${device.totalPower} 
-            boincPower:${device.boincPower} 
-            rvnPower:${device.rvnPower} 
-            roundTime:"${globals.round.end.toISOString()}"
-            device:{connect:{id:"${device.id}"}}}){id}
-        updateDevice(
-          where:{id:"${device.id}"} data:{
-            power:${device.totalPower} 
-            boincPower:${device.boincPower} 
-            rvnPower:${device.rvnPower} 
-          }){id}
-        }`)
-      if (powerRating) {
-        results.updatedDevices ++
-        if (device.boincPower > 0) results.boincDevices ++
-        if (device.rvnPower > 0) results.rvnDevices ++
-        results.totalBoincPower += device.boincPower
-        results.totalRvnPower += device.rvnPower
-        // logger.info(powerRating)
-      }
-    } catch (error) {
-      logger.info(error)
-      errors.push(error)
+      var result = Object.assign({id:device.id,rvnPower:0,boincPower:0,boincPending:0},
+        rvnPowerRatings[device.id],
+        boincPowerRatings[device.id])
+      result.totalPower = result.rvnPower + result.boincPower
+      if (result.totalPower === 0) continue
+      else parsedDevices.push(result) 
+    }catch(error){
+      logger.error('Error in device parsing!')
+      logger.error(error)
       continue
     }
-  }  
-  logger.info(JSON.stringify(parsedDevices),JSON.stringify(globals))
-  // reportDevicePowers(parsedDevices,globals)
-  logger.info(globals,JSON.stringify(results,null,2),errors)
-  logger.info('finished creating power ratings')
+  }
+  var errors = []
+  
+  var results = {updatedDevices:0,totalBoincPower:0,totalBoincPending:0, totalRvnPower:0,boincDevices:0,rvnDevices:0}
+  if (parsedDevices.length != 0){
+    logger.info('Saving and reporting Power Ratings for this chunk.')
+    for (device of parsedDevices){
+      try {
+        const powerRating = await db.gql(`mutation{
+          createDevicePowerRating(
+            data:{
+              power:${device.totalPower} 
+              boincPower:${device.boincPower} 
+              rvnPower:${device.rvnPower} 
+              roundTime:"${globals.round.end}"
+              device:{connect:{id:"${device.id}"}}}){id}
+          updateDevice(
+            where:{id:"${device.id}"} data:{
+              power:${device.totalPower} 
+              boincPower:${device.boincPower} 
+              rvnPower:${device.rvnPower} 
+            }){id}
+          }`)
+        if (powerRating) {
+          results.updatedDevices ++
+          if (device.boincPower > 0) results.boincDevices ++
+          if (device.rvnPower > 0) results.rvnDevices ++
+          results.totalBoincPower += device.boincPower
+          results.totalRvnPower += device.rvnPower
+          // logger.info(powerRating)
+        }
+      } catch (error) {
+        logger.info(error)
+        errors.push(error)
+        continue
+      }
+    }  
+    const reportData = {parsedDevices,globals}
+    console.log(JSON.stringify(reportData))
+    await reportDevicePowers(reportData)
+    logger.info(globals,JSON.stringify(results,null,2),errors)
+    logger.info('finished creating power ratings')
+  }
+  else logger.info('No power to report in this batch.')
   return {results,errors}
+
+
 
 }
 if (process.argv[2] === 'dev') init().catch(logger.error)
