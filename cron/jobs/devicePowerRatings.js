@@ -7,7 +7,7 @@ const reflect = p => p.then(data => ({data, status: "fulfilled" }),e => ({e, sta
 const ax = require('axios')
 const logger = require('logging').default('devicePowerRatings')
 const reportDevicePowers = require('./util/reportDevicePowers')
-const chunkSize = 1
+const chunkSize = 300
 Array.prototype.shuffle = function() {
   var i = this.length, j, temp;
   if ( i == 0 ) return this;
@@ -40,8 +40,7 @@ async function init(devices) {
       globals.round.start = new Date(Date.parse(globals.round.end) - globals.roundLength).toISOString()
       logger.info('Got Globals:',JSON.stringify(globals,null,2))
       
-      var deviceList = await db.gql(`{
-        devices(last:100){id wcgid createdAt workUnits(last:1){id} rvnShares(last:1){time}}}`)
+      var deviceList = await db.gql(`{devices{id wcgid createdAt workUnits(last:1){id}rvnShares(last:1){time}}}`)
       // var deviceList = [(await db.gql(`{ device ( where:{ id:"cjzp1utgz003o0733lf5tj15o" } ) 
       // {id wcgid createdAt workUnits(last:1){id} rvnShares(last:1){time}}}`))]
       const chunks = chunk(deviceList.shuffle(),chunkSize).filter(el => el)
@@ -68,10 +67,10 @@ async function init(devices) {
   logger.info('Updating Power for Devices:', devices.length)
   
   const allResults = await Promise.all([
-    // reflect(getBoincPower(devices.filter(el => el.workUnits[0]),globals)),
+    reflect(getBoincPower(devices.filter(el => el.workUnits[0]),globals)),
     reflect(getRvnPower(devices.filter(el => el.rvnShares[0]),globals))
   ])
-  var boincPowerRatings = {}
+  // var boincPowerRatings = {}
   // var rvnPowerRatings = {}
   var boincPowerRatings = allResults[0].data
   var rvnPowerRatings = allResults[1].data
@@ -129,7 +128,7 @@ async function init(devices) {
     }  
     const reportData = {parsedDevices,globals}
     console.log(JSON.stringify(reportData))
-    await reportDevicePowers(reportData)
+    reportDevicePowers(reportData)
     logger.info(globals,JSON.stringify(results,null,2),errors)
     logger.info('finished creating power ratings')
   }
