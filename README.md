@@ -50,7 +50,7 @@ docker-compose up -d
 ```
 Deploy Prisma Schema: This prepares the database to store validator data.
 ```
-Prisma deploy
+prisma deploy
 ```
 Prepare the .env.json file.
 ```
