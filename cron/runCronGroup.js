@@ -1,11 +1,14 @@
 const jobGroups = require('./jobGroups.json')
 const cron = require('./cron.js')
 const logger = require('logging').default('runCronGroup')
+const ms = require('human-interval')
+const sleep = ms => new Promise(res => setTimeout(res, ms))
 
 async function init(){
   if (process.argv[2]){
     try {
-      const jobs = jobGroups.find(el => el.group == process.argv[2]).jobs
+      const thisGroup = jobGroups.find(el => el.group == process.argv[2])
+      const jobs = thisGroup.jobs
       for (job of jobs){
         const result = await cron.run(job).catch(logger.error)
         if (result) logger.info(result)
@@ -17,9 +20,15 @@ async function init(){
   } else {
     logger.error('Please specify a cron group to run.')
   }
+  return thisGroup
 
 }
 
-init().then(async ()=>{
-  logger.info('finished cron cycle:', new Date().toDateString())
+init().then(async (thisGroup)=>{
+  logger.info('===========')
+  logger.info('finished cron cycle:',thisGroup.group, new Date().toDateString())
+  logger.info('jobs in this group:',thisGroup.jobs)
+  logger.info('sleeping:',thisGroup.sleep)
+  logger.info('===========')
+  await sleep(ms(thisGroup.sleep))
 })
