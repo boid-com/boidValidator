@@ -33,12 +33,11 @@ PM2
 ```
 npm i -g pm2
 ```
-
 **Initial Setup**
 
 Clone this repository and enter the directory
 ```
-git clone git@github.com:Boid-John/boidValidator.git
+git clone https://github.com/Boid-John/boidValidator.git
 cd boidValidator
 ```
 Install NPM dependencies
