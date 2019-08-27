@@ -71,7 +71,7 @@ If you see errors, stop the task (ctl-c) and copy the error logs into the privat
 
 No errors? Great. You can now setup pm2 to run the cron tasks continuously.
 ```
-pm2 start --name cron1 "node cron/runCronGroup.js 1"
+pm2 start pm2.config.js
 pm2 logs
 ```
 View the tasks progress (ctrl-c to exit)

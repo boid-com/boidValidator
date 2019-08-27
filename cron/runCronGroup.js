@@ -5,9 +5,10 @@ const ms = require('human-interval')
 const sleep = ms => new Promise(res => setTimeout(res, ms))
 
 async function init(){
+  var thisGroup = {}
   if (process.argv[2]){
+    thisGroup = jobGroups.find(el => el.group == process.argv[2])
     try {
-      const thisGroup = jobGroups.find(el => el.group == process.argv[2])
       const jobs = thisGroup.jobs
       for (job of jobs){
         const result = await cron.run(job).catch(logger.error)
@@ -19,6 +20,7 @@ async function init(){
     }
   } else {
     logger.error('Please specify a cron group to run.')
+    return thisGroup
   }
   return thisGroup
 
