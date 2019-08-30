@@ -90,7 +90,7 @@ async function init(){
     const lastRun = (await db.gql(`{ cronRuns( last:1 where: {runtime_not:null job: { name: "getRvnWork" } }) {
       errors runtime createdAt } }`))[0]
     if (!lastRun || lastRun.errors.length > 0) ModTime = Date.now() - ms('two hours')
-    else ModTime = Date.parse(lastRun.createdAt) - 300000
+    else ModTime = Date.parse(lastRun.createdAt) - ms('one minute')
     logger.info('Getting RvnShares since:',new Date(ModTime).toLocaleString())
 
     for (worker of workers){

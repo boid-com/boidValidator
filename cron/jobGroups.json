@@ -1,7 +1,7 @@
 [
   {
     "group":1,
-    "sleep":"20 minutes",
+    "sleep":"0 minutes",
     "jobs":["getDevices","devicePowerRatings"]
   }
 ]
