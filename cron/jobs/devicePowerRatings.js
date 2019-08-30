@@ -34,12 +34,14 @@ var globals
 async function init(devices) {
   try {
     if (!devices){
+      var now = new Date()
+      now.setUTCMinutes(0,0,0)
       globals = (await ax.post(env.boidAPI + 'getGlobals')).data
       globals.round = {}
-      globals.round.end = new Date(round(moment(), moment.duration(1, "hour"), "floor")).toISOString()
+      globals.round.end = now.toISOString()
       globals.round.start = new Date(Date.parse(globals.round.end) - globals.roundLength).toISOString()
       logger.info('Got Globals:',JSON.stringify(globals,null,2))
-      
+      return
       var deviceList = await db.gql(`{devices{id wcgid createdAt workUnits(last:1){id}rvnShares(last:1){time}}}`)
       // var deviceList = [(await db.gql(`{ device ( where:{ id:"cjzp1utgz003o0733lf5tj15o" } ) 
       // {id wcgid createdAt workUnits(last:1){id} rvnShares(last:1){time}}}`))]
