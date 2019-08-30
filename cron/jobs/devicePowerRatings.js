@@ -1,4 +1,3 @@
-const moment = require('moment')
 const db = require('../../db.js')
 const getRvnPower = require('./util/getRvnPower')
 const getBoincPower = require('./util/getBoincPower')
@@ -26,11 +25,7 @@ function chunk (arr, len) {
   while (i < n) {chunks.push(arr.slice(i, i += len))}
   return chunks
 }
-function round(date, duration, method) {
-  return moment(Math[method]((+date) / (+duration)) * (+duration)); 
-}
 var globals
-
 async function init(devices) {
   try {
     if (!devices){
