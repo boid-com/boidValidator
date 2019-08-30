@@ -41,7 +41,7 @@ async function init(devices) {
       globals.round.end = now.toISOString()
       globals.round.start = new Date(Date.parse(globals.round.end) - globals.roundLength).toISOString()
       logger.info('Got Globals:',JSON.stringify(globals,null,2))
-      var deviceList = await db.gql(`{devices{id wcgid createdAt workUnits(last:1){id}rvnShares(last:1){time}}}`)
+      var deviceList = await db.gql(`{devices{id rvnid wcgid createdAt workUnits(last:1){id}rvnShares(last:1){time}}}`)
       const chunks = chunk(deviceList.shuffle(),chunkSize).filter(el => el)
       logger.info('Split devices into Chunks:',chunks.length)
       const results = []
