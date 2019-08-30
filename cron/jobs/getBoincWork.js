@@ -22,8 +22,8 @@ async function getAccount(apiParams) {
   var batchSize = 250
   var allData = []
   var i = 0
-  var totalLength =  parseInt(await ax.get(apiURL,{params:apiParams}).catch(logger.error))
-  totalLength = totalLength.data.ResultsStatus.ResultsAvailable
+  var totalLength =  await ax.get(apiURL,{params:apiParams}).catch(logger.error)
+  totalLength = parseInt(totalLength.data.ResultsStatus.ResultsAvailable)
   async function loop(apiParams){
     logger.info('')
     logger.info('Completed',i,'of',totalLength,'WUs')
