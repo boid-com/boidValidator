@@ -32,7 +32,7 @@ async function createShareData(share,deviceId){
           time:$time
           difficulty: ${share.difficulty}
           shareDifficulty: ${share.share_diff}
-          device:{connect:{rvnid:"${deviceId}"}}
+          deviceId: "${deviceId}"
         }
       ){time}
     }
@@ -40,19 +40,9 @@ async function createShareData(share,deviceId){
   return result
 }
 
-async function doQuery(worker) {
+async function doQuery(worker,ModTime) {
   return new Promise(async(res,rej)=>{
     try {
-      let ModTime
-      const lastRun = (await db.gql(`{ cronRuns( last:1 where: {runtime_not:null job: { name: "getRvnWork" } }) {
-        errors runtime createdAt } }`))[0]
-      if (!lastRun || lastRun.errors.length > 0) ModTime = Date.now() - ms('two hours')
-      else ModTime = Date.parse(lastRun.createdAt) - 300000
-      logger.info('Getting RvnShares since:',new Date(ModTime).toLocaleString())
-      const existingMiner = await db.gql(`{device(where:{rvnid:"${worker.worker}"})
-      {id rvnShares(orderBy:time_DESC first:1){time}}}`)
-      // logger.info(existingMiner)
-      if (!existingMiner) return res()
       var query = `
         select id, userid, time, error, valid, difficulty, share_diff
         from shares
@@ -95,10 +85,18 @@ async function init(){
     })).data.filter(el => el.worker != '')
     logger.info('')
     logger.info('Found',workers.length,'rvnWorkers')
+
+    let ModTime
+    const lastRun = (await db.gql(`{ cronRuns( last:1 where: {runtime_not:null job: { name: "getRvnWork" } }) {
+      errors runtime createdAt } }`))[0]
+    if (!lastRun || lastRun.errors.length > 0) ModTime = Date.now() - ms('two hours')
+    else ModTime = Date.parse(lastRun.createdAt) - 300000
+    logger.info('Getting RvnShares since:',new Date(ModTime).toLocaleString())
+
     for (worker of workers){
       logger.info('')
       logger.info('RvnDevice:',worker.worker)
-      await doQuery(worker)
+      await doQuery(worker,ModTime)
     }
     logger.info('getRvnWork has finished!')
     return {results:{totalWorkers:workers.length,workers},errors:[]}

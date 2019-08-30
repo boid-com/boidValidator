@@ -23,6 +23,7 @@ type shareData {
   device: Device
   shareHash: String! @unique
   power: Float
+  deviceId: String!
 }
 
 type DevicePowerRating {
