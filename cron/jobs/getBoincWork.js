@@ -59,7 +59,7 @@ async function init() {
   logger.info('get BOINC Work Units')
   try {
     let ModTime
-    ModTime = (Date.now() - ms('1 hour'))
+    ModTime = (Date.now() - ms(env.lookbackTime))
     logger.info('')
     logger.info('Getting WU from the past hour')
     ModTime = parseInt(ModTime/1000)
