@@ -3,7 +3,6 @@ const env = require('../../../.env.json')
 const ax = require('axios')
 const ms = require('human-interval')
 const logger = require('logging').default('reportDevicePowers')
-var hash = require('object-hash')
 
 const sleep = ms => new Promise(res => setTimeout(res, ms))
 
