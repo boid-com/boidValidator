@@ -67,7 +67,7 @@ async function init(devices) {
   
   const allResults = await Promise.all([
     reflect(getBoincPower(devices.filter(el => el.workUnits[0]),globals)),
-    reflect(getRvnPower(devices.filter(el => el.rvnShares[0]),globals))
+    reflect(getRvnPower(devices.filter(el => el.rvnid),globals))
   ])
   // var boincPowerRatings = {}
   // var rvnPowerRatings = {}

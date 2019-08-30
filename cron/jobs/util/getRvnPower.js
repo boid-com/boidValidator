@@ -12,13 +12,13 @@ async function rvnFindPower(devices,globals){
   var powerRatings = {}
 
   for (device of devices){
-    logger.info('start Rvn device loop')
     try {
       const roundStart = globals.round.start
       const roundEnd = globals.round.end
       const rvnShares = await db.gql(`query($roundStart:DateTime $roundEnd:DateTime){
         shareDatas( where:{deviceId:"${device.rvnid}" valid:true time_gt:$roundStart time_lt:$roundEnd })
           {time valid difficulty shareDifficulty shareHash}}`,{roundStart,roundEnd})
+      if (!rvnShares || rvnShares.length == 0) continue
       logger.info('#Shares',rvnShares.length)
       var mutations = []
       for (share of rvnShares){
