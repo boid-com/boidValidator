@@ -7,7 +7,7 @@ const env = require('../../.env.json')
 const logger = require('logging').default('getBoincWork')
 
 var apiURL = 'https://www.worldcommunitygrid.org/api/members/boid.com/results?code=' + env.wcgKey
-var apiParams = {Limit:250}
+var apiParams = {Limit:250,ValidateState:1}
 var getData = async function(i,apiParams){
   var offsetParams = Object.assign(apiParams,{})
   offsetParams.Offset = i
@@ -45,13 +45,15 @@ async function getAccount(apiParams) {
 
 async function updateUnits(workUnits){
   for (unit of workUnits){
-    // logger.info(unit)
+    logger.debug(unit)
+    const existing = await db.gql(`{workUnit(where:{workUnitId:${parseInt(unit.WorkunitId)}}){id validatedAt}}`)
+    if (unit.ValidateState == 1 && !existing || existing && !existing.validatedAt) unit.validatedAt = new Date().toISOString()
     if (unit.ReportDeadline) unit.ReportDeadline = new Date(Date.parse(unit.ReportDeadline)).toISOString()
     if (unit.SentTime) unit.SentTime = new Date(Date.parse(unit.SentTime)).toISOString()
     if (unit.ReceivedTime) unit.ReceivedTime = new Date(Date.parse(unit.ReceivedTime)).toISOString()
     unit.device = await db.gql(`{device(where:{wcgid:"${unit.DeviceId}"}){id}}`)
     const result = await db.gql(saveUnit(unit),unit).catch((error)=>{logger.error(error)})
-    // logger.info(result)
+    logger.debug(result)
   }
 }
 
@@ -59,10 +61,13 @@ async function init() {
   logger.info('get BOINC Work Units')
   try {
     let ModTime
-    ModTime = (Date.now() - ms(env.lookbackTime))
+    const lastRun = (await db.gql(`{ cronRuns( last:1 where: {runtime_not:null job: { name: "getBoincWork" } }) {
+      errors runtime createdAt } }`))[0]
+    if (!lastRun || lastRun.errors.length > 0) ModTime = Date.now() - ms('two hours')
+    else ModTime = (Date.parse(lastRun.createdAt)) - 300000
     logger.info('')
-    logger.info('Getting WU from the past hour')
-    ModTime = parseInt(ModTime/1000)
+    logger.info('Getting WU since:',new Date(ModTime).toLocaleString())
+    ModTime = parseInt(ModTime/1000)  
     await getAccount(Object.assign(apiParams,{ModTime}))
     logger.info('')
     logger.info('getBoincWork has finished!')

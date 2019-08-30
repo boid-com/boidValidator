@@ -11,6 +11,7 @@ ax.defaults.baseURL = 'http://rvn.boid.com:4444/sql'
 
 logger.info(ax.defaults.baseURL)
 var hash = require('node-object-hash')({sort:false, coerce:false}).hash
+var hash = require('node-object-hash')({sort:false, coerce:false}).hash
 var workers
 
 async function createShareData(share,deviceId){
@@ -42,7 +43,12 @@ async function createShareData(share,deviceId){
 async function doQuery(worker) {
   return new Promise(async(res,rej)=>{
     try {
-      const oneHourBack = parseInt((Date.now() - ms(env.lookbackTime))/1000)
+      let ModTime
+      const lastRun = (await db.gql(`{ cronRuns( last:1 where: {runtime_not:null job: { name: "getRvnWork" } }) {
+        errors runtime createdAt } }`))[0]
+      if (!lastRun || lastRun.errors.length > 0) ModTime = Date.now() - ms('two hours')
+      else ModTime = Date.parse(lastRun.createdAt) - 300000
+      logger.info('Getting RvnShares since:',new Date(ModTime).toLocaleString())
       const existingMiner = await db.gql(`{device(where:{rvnid:"${worker.worker}"})
       {id rvnShares(orderBy:time_DESC first:1){time}}}`)
       // logger.info(existingMiner)
@@ -52,7 +58,7 @@ async function doQuery(worker) {
         from shares
         where workerid=${worker.id}
         and coinid=1425
-        and time > ${oneHourBack}
+        and time > ${ModTime/1000}
       `
       // console.log(query)
       query = query.replace(/(\r\n|\n|\r)/gm, "")
@@ -95,7 +101,7 @@ async function init(){
       await doQuery(worker)
     }
     logger.info('getRvnWork has finished!')
-    return {results:{totalWorkers:workers.length,workers},errors:null}
+    return {results:{totalWorkers:workers.length,workers},errors:[]}
   } catch (error) {
     logger.info(error)
     return {results:null,errors:[error]}

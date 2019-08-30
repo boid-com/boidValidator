@@ -58,6 +58,7 @@ type CronRun {
 type workUnit {
   id: ID! @id
   createdAt: DateTime! @createdAt
+  validatedAt: DateTime
   appName: String
   claimedCredit: Float
   cpuTime: Float

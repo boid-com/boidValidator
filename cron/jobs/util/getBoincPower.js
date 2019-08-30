@@ -28,7 +28,7 @@ async function boincFindPower(devices,globals) {
     try {
       const deviceID = parseInt(device.wcgid)
       var workUnits = (await db.gql(`query($roundStart:DateTime $roundEnd:DateTime)
-      {workUnits(where:{deviceId:${deviceID} receivedTime_gt:$roundStart receivedTime_lt:$roundEnd})
+      {workUnits(where:{deviceId:${deviceID} validatedAt_gt:$roundStart validatedAt_lt:$roundEnd})
       {id receivedTime grantedCredit claimedCredit serverState validateState outcome deviceId workUnitId power}}`, 
       {roundStart:globals.round.start, roundEnd:globals.round.end}))
       if (!workUnits[0]) {

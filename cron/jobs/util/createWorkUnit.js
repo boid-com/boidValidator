@@ -4,6 +4,10 @@ function createWorkUnit(data){
     if (data.device) return `device:{connect:{id:"${data.device.id}"}}`
     else return ''
   }
+  function validatedAt(){
+    if (data.validatedAt) return `validatedAt:"${data.validatedAt}"`
+    else return ''
+  }
   return`
   mutation($ReceivedTime:DateTime $ReportDeadline: DateTime $SentTime: DateTime){
     upsertworkUnit(
@@ -31,6 +35,7 @@ function createWorkUnit(data){
         fileDeleteState: ${data.FileDeleteState}
         power:0
         ${unitDevice()}
+        ${validatedAt()}
       }
       update:{
         claimedCredit: ${data.ClaimedCredit}
@@ -46,6 +51,7 @@ function createWorkUnit(data){
         validateState: ${data.ValidateState}
         fileDeleteState: ${data.FileDeleteState}
         ${unitDevice()}
+        ${validatedAt()}
       }
     ){id}
   }`
