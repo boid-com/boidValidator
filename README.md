@@ -103,6 +103,23 @@ This task is a wrapper around two other jobs (getBoincWork and getRvnWork). This
 This Job parses the work data from the previous job, associating it with specifc devices and generating a Boid Power score for each device based on the current "round". A round starts/ends each UTC hour, and the validators need to gather information and make a power report about each device before the end of the current round. The Boid Power ratings are grouped into chunks and then hashed with the validator private key to be reported. The reported power ratings from all Validator nodes are then aggregated to reach a final consenus at the end of each round.
 
 
+### Performance tweaks
+
+This section will outline various tips/tricks that could improve the performance of the node validator.
+
+**postgres DB improvements:**
+The following SQL commands have to be executed directly against the postgresql DB ( not via prisma ). By default the docker container is not exposed
+to your host OS, you will need to modify docker-composer.yml to expose the default postgres port.
+Create an index in the workUnit table, this can be done during runtime.
+```
+CREATE UNIQUE INDEX "device_index" ON "default$default"."workUnit" USING BTREE ("deviceId");
+```
+If you need to remove the index simply execute:
+```
+DROP INDEX "default$default"."device_index";
+```
+I observed about a 45% improvement in the speed of devicePowerRating cronjob after the index was created.
+
 
 ### Utility functions
 
