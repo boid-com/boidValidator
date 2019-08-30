@@ -6,7 +6,7 @@ docker-compose rm -fvs && docker volume prune --force
 echo "${green}Starting Prisma...${reset}"
 docker-compose up -d
 echo "${green}Waiting for Prisma to be ready... ${reset}"
-sleep 10
+sleep 30
 echo "${green}Deploying schema to fresh DB... ${reset}"
 prisma deploy
 echo "${green}Done! The database is ready to be populated. ${reset}"
