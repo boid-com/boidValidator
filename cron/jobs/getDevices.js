@@ -23,7 +23,7 @@ async function addDevice(device){
 async function init(){
   const devices = (await ax.post( env.boidAPI+'getDevices')).data
   logger.info('')
-  logger.info('found registered devices',devices.length)
+  logger.info('Found',devices.length,'registered devices')
   logger.info('Upserting devices into DB...')
   for (device of devices){await addDevice(device)}
   logger.info('finished upserting devices')

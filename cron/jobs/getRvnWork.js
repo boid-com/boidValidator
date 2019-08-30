@@ -10,8 +10,7 @@ ax.defaults.headers.common['Content-Type'] = 'application/json'
 ax.defaults.baseURL = 'http://rvn.boid.com:4444/sql'
 
 logger.info(ax.defaults.baseURL)
-// var hash = require('object-hash')
-var hash = hash({sort:false, coerce:false}).hash
+var hash = require('node-object-hash')({sort:false, coerce:false}).hash
 var workers
 
 async function createShareData(share,deviceId){
