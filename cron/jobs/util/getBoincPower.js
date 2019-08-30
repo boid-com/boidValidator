@@ -27,15 +27,15 @@ async function boincFindPower(devices,globals) {
   for (var device of devices) {
     try {
       const deviceID = parseInt(device.wcgid)
-      logger.info('Getting Device WU',deviceID)
       var workUnits = (await db.gql(`query($roundStart:DateTime $roundEnd:DateTime)
       {workUnits(where:{deviceId:${deviceID} receivedTime_gt:$roundStart receivedTime_lt:$roundEnd})
       {id receivedTime grantedCredit claimedCredit serverState validateState outcome deviceId workUnitId power}}`, 
       {roundStart:globals.round.start, roundEnd:globals.round.end}))
       if (!workUnits[0]) {
-        logger.info('No Device WU found for this round')
+        // logger.info('No Device WU found for this round')
         continue
       }
+      logger.info('Getting Device WU',deviceID)
       logger.info('Found WorkUnits for this round:#:',workUnits.length)
       const parsedUnits = await parseUnits(workUnits, device.id, globals)
       logger.info('')
