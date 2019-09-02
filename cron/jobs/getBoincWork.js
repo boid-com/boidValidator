@@ -5,6 +5,11 @@ const sleep = ms => new Promise(res => setTimeout(res, ms))
 const saveUnit = require('./util/createWorkUnit.js')
 const env = require('../../.env.json')
 const logger = require('logging').default('getBoincWork')
+var results = {
+  updatedWU:0,
+  newWU:0, 
+  totalWU:0
+}
 
 var apiURL = 'https://www.worldcommunitygrid.org/api/members/boid.com/results?code=' + env.wcgKey
 var apiParams = {Limit:250,ValidateState:1}
@@ -34,8 +39,8 @@ async function getAccount(apiParams) {
     await updateUnits(data).catch(logger.error)
     data.forEach((el)=>{allData.push(el)}) 
     i += batchSize
-    logger.info('sleeping 5 seconds')
-    await sleep(ms('5 seconds'))
+    logger.info('sleeping 1 second')
+    await sleep(ms('1 second'))
     await loop(apiParams)    
   }
   await loop(apiParams).catch(logger.error)
@@ -47,6 +52,8 @@ async function updateUnits(workUnits){
   for (unit of workUnits){
     logger.debug(unit)
     const existing = await db.gql(`{workUnit(where:{workUnitId:${parseInt(unit.WorkunitId)}}){id validatedAt}}`)
+    if (existing) results.updatedWU ++
+    else results.newWU ++
     if (unit.ValidateState == 1 && !existing || existing && !existing.validatedAt) unit.validatedAt = new Date().toISOString()
     if (unit.ReportDeadline) unit.ReportDeadline = new Date(Date.parse(unit.ReportDeadline)).toISOString()
     if (unit.SentTime) unit.SentTime = new Date(Date.parse(unit.SentTime)).toISOString()
@@ -63,15 +70,20 @@ async function init() {
     let ModTime
     const lastRun = (await db.gql(`{ cronRuns( last:1 where: {runtime_not:null job: { name: "getBoincWork" } }) {
       errors runtime createdAt } }`))[0]
-    if (!lastRun || lastRun.errors.length > 0) ModTime = Date.now() - ms('two hours')
+    if (!lastRun || lastRun.errors.length > 0) ModTime = Date.now() - ms('2 hours')
     else ModTime = (Date.parse(lastRun.createdAt)) - ms('one minute')
+    results.queryUpdatedSince = new Date(ModTime).toLocaleString()
     logger.info('')
-    logger.info('Getting WU since:',new Date(ModTime).toLocaleString())
+    logger.info('Getting WU since:',results.queryUpdatedSince)
     ModTime = parseInt(ModTime/1000)  
     await getAccount(Object.assign(apiParams,{ModTime}))
+    results.queryFinished = new Date().toLocaleString()
+    results.totalWU = results.updatedWU + results.newWU
+    results.queryTimeLength = Date.parse(results.queryFinished) - Date.parse(results.queryUpdatedSince)
+    results.newWUHourly = results.newWU*(36000000 / results.queryTimeLength)
     logger.info('')
     logger.info('getBoincWork has finished!')
-    return {errors:[],results:{success:true}}
+    return {errors:[],results}
   } catch (error) {
     logger.error(error)
     return {errors:[error.message]}

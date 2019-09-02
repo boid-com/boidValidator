@@ -10,10 +10,10 @@ async function run(jobName){
     run = await db.gql(`mutation{createCronRun(data:{job:{connect:{name:"${jobName}"}}}){id createdAt}}`)
     const job = await require('./jobs/'+jobName)()
     const runtime = Date.now() - Date.parse(run.createdAt) 
-    const updateRun = await db.gql(`mutation($results:Json $errors:Json){updateCronRun(where:{id:"${run.id}"}
+    const cronRun = await db.gql(`mutation($results:Json $errors:Json){updateCronRun(where:{id:"${run.id}"}
       data:{results:$results errors:$errors runtime:${runtime}})
       {id}}`,job)
-    return {updateRun,runtime,job}
+    return {jobName,cronRun,runtime,job}
   } catch (error) {
     logger.error(error)
     if (run){
