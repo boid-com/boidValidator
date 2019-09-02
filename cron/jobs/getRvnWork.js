@@ -99,7 +99,7 @@ async function init(){
       await doQuery(worker,ModTime)
     }
     logger.info('getRvnWork has finished!')
-    return {results:{totalWorkers:workers.length,workers},errors:[]}
+    return {results:{totalWorkers:workers.length},errors:[]}
   } catch (error) {
     logger.info(error)
     return {results:null,errors:[error]}
