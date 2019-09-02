@@ -3,8 +3,11 @@ services:
   prisma:
     image: prismagraphql/prisma:1.34
     restart: always
-    ports:
+    ports: # Uncomment only one line
+    # Exposed to localhost only
     - "127.0.0.1:4466:4466"
+    # Exposed externally, make sure you have firewall or managementApiSecret implemented
+    #- "4466:4466"
     environment:
       PRISMA_CONFIG: |
         port: 4466
