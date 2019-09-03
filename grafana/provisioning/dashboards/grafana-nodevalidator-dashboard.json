@@ -12,6 +12,7 @@
       }
     ]
   },
+  "description": "This dashboard tracks metrics from the node validator via postgres DB",
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
@@ -26,7 +27,7 @@
       "bars": true,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "PostgreSQL",
+      "datasource": "PostgresSQL",
       "editable": true,
       "error": false,
       "fill": 0,
@@ -38,7 +39,7 @@
         "y": 0
       },
       "id": 3,
-      "interval": ">600s",
+      "interval": ">60m",
       "legend": {
         "avg": false,
         "current": false,
@@ -61,14 +62,62 @@
       "renderer": "flot",
       "seriesOverrides": [
         {
-          "alias": "Invalid",
-          "yaxis": 1
+          "alias": "test"
         }
       ],
       "spaceLength": 10,
       "stack": true,
       "steppedLine": false,
       "targets": [
+        {
+          "format": "time_series",
+          "group": [
+            {
+              "params": [
+                "$__interval",
+                "none"
+              ],
+              "type": "time"
+            }
+          ],
+          "hide": true,
+          "metricColumn": "none",
+          "rawQuery": false,
+          "rawSql": "SELECT\n  $__time(time_column),\n  value1\nFROM\n  metric_table\nWHERE\n  $__timeFilter(time_column)\n",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "\"validateState\""
+                ],
+                "type": "column"
+              },
+              {
+                "params": [
+                  "count"
+                ],
+                "type": "aggregate"
+              },
+              {
+                "params": [
+                  "test"
+                ],
+                "type": "alias"
+              }
+            ]
+          ],
+          "table": "\"default$default\".\"workUnit\"",
+          "timeColumn": "\"createdAt\"",
+          "timeColumnType": "timestamp",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        },
         {
           "format": "time_series",
           "group": [
@@ -100,64 +149,6 @@
               },
               {
                 "params": [
-                  "Pending"
-                ],
-                "type": "alias"
-              }
-            ]
-          ],
-          "table": "\"default$default\".\"workUnit\"",
-          "timeColumn": "\"createdAt\"",
-          "timeColumnType": "timestamp",
-          "where": [
-            {
-              "name": "$__timeFilter",
-              "params": [],
-              "type": "macro"
-            },
-            {
-              "datatype": "int4",
-              "name": "",
-              "params": [
-                "\"validateState\"",
-                "=",
-                "0"
-              ],
-              "type": "expression"
-            }
-          ]
-        },
-        {
-          "format": "time_series",
-          "group": [
-            {
-              "params": [
-                "$__interval",
-                "none"
-              ],
-              "type": "time"
-            }
-          ],
-          "metricColumn": "none",
-          "rawQuery": false,
-          "rawSql": "SELECT\n  $__time(time_column),\n  value1\nFROM\n  metric_table\nWHERE\n  $__timeFilter(time_column)\n",
-          "refId": "A",
-          "select": [
-            [
-              {
-                "params": [
-                  "\"validateState\""
-                ],
-                "type": "column"
-              },
-              {
-                "params": [
-                  "count"
-                ],
-                "type": "aggregate"
-              },
-              {
-                "params": [
                   "Valid"
                 ],
                 "type": "alias"
@@ -165,198 +156,13 @@
             ]
           ],
           "table": "\"default$default\".\"workUnit\"",
-          "timeColumn": "\"createdAt\"",
+          "timeColumn": "\"validatedAt\"",
           "timeColumnType": "timestamp",
           "where": [
             {
               "name": "$__timeFilter",
               "params": [],
               "type": "macro"
-            },
-            {
-              "datatype": "int4",
-              "name": "",
-              "params": [
-                "\"validateState\"",
-                "=",
-                "1"
-              ],
-              "type": "expression"
-            }
-          ]
-        },
-        {
-          "format": "time_series",
-          "group": [
-            {
-              "params": [
-                "$__interval",
-                "none"
-              ],
-              "type": "time"
-            }
-          ],
-          "metricColumn": "none",
-          "rawQuery": false,
-          "rawSql": "SELECT\n  $__time(time_column),\n  value1\nFROM\n  metric_table\nWHERE\n  $__timeFilter(time_column)\n",
-          "refId": "C",
-          "select": [
-            [
-              {
-                "params": [
-                  "\"validateState\""
-                ],
-                "type": "column"
-              },
-              {
-                "params": [
-                  "count"
-                ],
-                "type": "aggregate"
-              },
-              {
-                "params": [
-                  "Invalid"
-                ],
-                "type": "alias"
-              }
-            ]
-          ],
-          "table": "\"default$default\".\"workUnit\"",
-          "timeColumn": "\"createdAt\"",
-          "timeColumnType": "timestamp",
-          "where": [
-            {
-              "name": "$__timeFilter",
-              "params": [],
-              "type": "macro"
-            },
-            {
-              "datatype": "int4",
-              "name": "",
-              "params": [
-                "\"validateState\"",
-                "=",
-                "2"
-              ],
-              "type": "expression"
-            }
-          ]
-        },
-        {
-          "format": "time_series",
-          "group": [
-            {
-              "params": [
-                "$__interval",
-                "none"
-              ],
-              "type": "time"
-            }
-          ],
-          "hide": true,
-          "metricColumn": "none",
-          "rawQuery": false,
-          "rawSql": "SELECT\n  $__time(time_column),\n  value1\nFROM\n  metric_table\nWHERE\n  $__timeFilter(time_column)\n",
-          "refId": "D",
-          "select": [
-            [
-              {
-                "params": [
-                  "\"validateState\""
-                ],
-                "type": "column"
-              },
-              {
-                "params": [
-                  "count"
-                ],
-                "type": "aggregate"
-              },
-              {
-                "params": [
-                  "Pending verification"
-                ],
-                "type": "alias"
-              }
-            ]
-          ],
-          "table": "\"default$default\".\"workUnit\"",
-          "timeColumn": "\"createdAt\"",
-          "timeColumnType": "timestamp",
-          "where": [
-            {
-              "name": "$__timeFilter",
-              "params": [],
-              "type": "macro"
-            },
-            {
-              "datatype": "int4",
-              "name": "",
-              "params": [
-                "\"validateState\"",
-                "=",
-                "4"
-              ],
-              "type": "expression"
-            }
-          ]
-        },
-        {
-          "format": "time_series",
-          "group": [
-            {
-              "params": [
-                "$__interval",
-                "none"
-              ],
-              "type": "time"
-            }
-          ],
-          "metricColumn": "none",
-          "rawQuery": false,
-          "rawSql": "SELECT\n  $__time(time_column),\n  value1\nFROM\n  metric_table\nWHERE\n  $__timeFilter(time_column)\n",
-          "refId": "E",
-          "select": [
-            [
-              {
-                "params": [
-                  "\"validateState\""
-                ],
-                "type": "column"
-              },
-              {
-                "params": [
-                  "count"
-                ],
-                "type": "aggregate"
-              },
-              {
-                "params": [
-                  "Failed deadline"
-                ],
-                "type": "alias"
-              }
-            ]
-          ],
-          "table": "\"default$default\".\"workUnit\"",
-          "timeColumn": "\"createdAt\"",
-          "timeColumnType": "timestamp",
-          "where": [
-            {
-              "name": "$__timeFilter",
-              "params": [],
-              "type": "macro"
-            },
-            {
-              "datatype": "int4",
-              "name": "",
-              "params": [
-                "\"validateState\"",
-                "=",
-                "5"
-              ],
-              "type": "expression"
             }
           ]
         }
@@ -386,7 +192,7 @@
           "label": null,
           "logBase": 1,
           "max": null,
-          "min": null,
+          "min": "0",
           "show": true
         },
         {
@@ -411,7 +217,7 @@
       "bars": true,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "PostgreSQL",
+      "datasource": "PostgresSQL",
       "editable": true,
       "error": false,
       "fill": 0,
@@ -797,7 +603,7 @@
       "bars": true,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "PostgreSQL",
+      "datasource": "PostgresSQL",
       "editable": true,
       "error": false,
       "fill": 0,
@@ -979,7 +785,7 @@
       "bars": true,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "PostgreSQL",
+      "datasource": "PostgresSQL",
       "editable": true,
       "error": false,
       "fill": 0,
@@ -1165,7 +971,7 @@
       "bars": true,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "PostgreSQL",
+      "datasource": "PostgresSQL",
       "editable": true,
       "error": false,
       "fill": 0,
@@ -1353,7 +1159,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "PostgreSQL",
+      "datasource": "PostgresSQL",
       "editable": true,
       "error": false,
       "fill": 0,
@@ -1613,7 +1419,7 @@
       "bars": true,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "PostgreSQL",
+      "datasource": "PostgresSQL",
       "editable": true,
       "error": false,
       "fill": 0,
@@ -1751,7 +1557,7 @@
     "list": []
   },
   "time": {
-    "from": "now-2d",
+    "from": "now-1h",
     "to": "now"
   },
   "timepicker": {
@@ -1782,5 +1588,5 @@
   "timezone": "browser",
   "title": "boid Node Validator",
   "uid": "000000010",
-  "version": 9
+  "version": 10
 }
