@@ -16,7 +16,6 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": 10,
   "links": [],
   "panels": [
     {
@@ -1244,12 +1243,12 @@
               "type": "macro"
             },
             {
-              "datatype": "varchar",
+              "datatype": "text",
               "name": "",
               "params": [
-                "job",
+                "\"jobName\"",
                 "=",
-                "'cjztfuvi2000a0744cnqkl3p7'"
+                "'getDevices'"
               ],
               "type": "expression"
             }
@@ -1286,7 +1285,7 @@
               },
               {
                 "params": [
-                  "getAllWork"
+                  "devicePowerRatings"
                 ],
                 "type": "alias"
               }
@@ -1302,12 +1301,12 @@
               "type": "macro"
             },
             {
-              "datatype": "varchar",
+              "datatype": "text",
               "name": "",
               "params": [
-                "job",
+                "\"jobName\"",
                 "=",
-                "'cjztfvt3z0k4g0744hs6nkv03'"
+                "'devicePowerRatings'"
               ],
               "type": "expression"
             }
@@ -1344,7 +1343,7 @@
               },
               {
                 "params": [
-                  "devicePowerRatings"
+                  "getRvnWork"
                 ],
                 "type": "alias"
               }
@@ -1360,12 +1359,12 @@
               "type": "macro"
             },
             {
-              "datatype": "varchar",
+              "datatype": "text",
               "name": "",
               "params": [
-                "job",
+                "\"jobName\"",
                 "=",
-                "'cjztg0g6h1poa0744o3wwzfpk'"
+                "'getRvnWork'"
               ],
               "type": "expression"
             }
@@ -1588,5 +1587,5 @@
   "timezone": "browser",
   "title": "boid Node Validator",
   "uid": "000000010",
-  "version": 10
+  "version": 3
 }
