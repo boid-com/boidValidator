@@ -12,10 +12,11 @@
       }
     ]
   },
+  "description": "This dashboard tracks metrics from the node validator via postgres DB",
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": 10,
+  "id": 1,
   "links": [],
   "panels": [
     {
@@ -26,7 +27,7 @@
       "bars": true,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "PostgreSQL",
+      "datasource": "PostgresSQL",
       "editable": true,
       "error": false,
       "fill": 0,
@@ -38,7 +39,7 @@
         "y": 0
       },
       "id": 3,
-      "interval": ">600s",
+      "interval": ">60m",
       "legend": {
         "avg": false,
         "current": false,
@@ -61,14 +62,62 @@
       "renderer": "flot",
       "seriesOverrides": [
         {
-          "alias": "Invalid",
-          "yaxis": 1
+          "alias": "test"
         }
       ],
       "spaceLength": 10,
       "stack": true,
       "steppedLine": false,
       "targets": [
+        {
+          "format": "time_series",
+          "group": [
+            {
+              "params": [
+                "$__interval",
+                "none"
+              ],
+              "type": "time"
+            }
+          ],
+          "hide": true,
+          "metricColumn": "none",
+          "rawQuery": false,
+          "rawSql": "SELECT\n  $__time(time_column),\n  value1\nFROM\n  metric_table\nWHERE\n  $__timeFilter(time_column)\n",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "\"validateState\""
+                ],
+                "type": "column"
+              },
+              {
+                "params": [
+                  "count"
+                ],
+                "type": "aggregate"
+              },
+              {
+                "params": [
+                  "test"
+                ],
+                "type": "alias"
+              }
+            ]
+          ],
+          "table": "\"default$default\".\"workUnit\"",
+          "timeColumn": "\"createdAt\"",
+          "timeColumnType": "timestamp",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        },
         {
           "format": "time_series",
           "group": [
@@ -100,64 +149,6 @@
               },
               {
                 "params": [
-                  "Pending"
-                ],
-                "type": "alias"
-              }
-            ]
-          ],
-          "table": "\"default$default\".\"workUnit\"",
-          "timeColumn": "\"createdAt\"",
-          "timeColumnType": "timestamp",
-          "where": [
-            {
-              "name": "$__timeFilter",
-              "params": [],
-              "type": "macro"
-            },
-            {
-              "datatype": "int4",
-              "name": "",
-              "params": [
-                "\"validateState\"",
-                "=",
-                "0"
-              ],
-              "type": "expression"
-            }
-          ]
-        },
-        {
-          "format": "time_series",
-          "group": [
-            {
-              "params": [
-                "$__interval",
-                "none"
-              ],
-              "type": "time"
-            }
-          ],
-          "metricColumn": "none",
-          "rawQuery": false,
-          "rawSql": "SELECT\n  $__time(time_column),\n  value1\nFROM\n  metric_table\nWHERE\n  $__timeFilter(time_column)\n",
-          "refId": "A",
-          "select": [
-            [
-              {
-                "params": [
-                  "\"validateState\""
-                ],
-                "type": "column"
-              },
-              {
-                "params": [
-                  "count"
-                ],
-                "type": "aggregate"
-              },
-              {
-                "params": [
                   "Valid"
                 ],
                 "type": "alias"
@@ -165,198 +156,13 @@
             ]
           ],
           "table": "\"default$default\".\"workUnit\"",
-          "timeColumn": "\"createdAt\"",
+          "timeColumn": "\"validatedAt\"",
           "timeColumnType": "timestamp",
           "where": [
             {
               "name": "$__timeFilter",
               "params": [],
               "type": "macro"
-            },
-            {
-              "datatype": "int4",
-              "name": "",
-              "params": [
-                "\"validateState\"",
-                "=",
-                "1"
-              ],
-              "type": "expression"
-            }
-          ]
-        },
-        {
-          "format": "time_series",
-          "group": [
-            {
-              "params": [
-                "$__interval",
-                "none"
-              ],
-              "type": "time"
-            }
-          ],
-          "metricColumn": "none",
-          "rawQuery": false,
-          "rawSql": "SELECT\n  $__time(time_column),\n  value1\nFROM\n  metric_table\nWHERE\n  $__timeFilter(time_column)\n",
-          "refId": "C",
-          "select": [
-            [
-              {
-                "params": [
-                  "\"validateState\""
-                ],
-                "type": "column"
-              },
-              {
-                "params": [
-                  "count"
-                ],
-                "type": "aggregate"
-              },
-              {
-                "params": [
-                  "Invalid"
-                ],
-                "type": "alias"
-              }
-            ]
-          ],
-          "table": "\"default$default\".\"workUnit\"",
-          "timeColumn": "\"createdAt\"",
-          "timeColumnType": "timestamp",
-          "where": [
-            {
-              "name": "$__timeFilter",
-              "params": [],
-              "type": "macro"
-            },
-            {
-              "datatype": "int4",
-              "name": "",
-              "params": [
-                "\"validateState\"",
-                "=",
-                "2"
-              ],
-              "type": "expression"
-            }
-          ]
-        },
-        {
-          "format": "time_series",
-          "group": [
-            {
-              "params": [
-                "$__interval",
-                "none"
-              ],
-              "type": "time"
-            }
-          ],
-          "hide": true,
-          "metricColumn": "none",
-          "rawQuery": false,
-          "rawSql": "SELECT\n  $__time(time_column),\n  value1\nFROM\n  metric_table\nWHERE\n  $__timeFilter(time_column)\n",
-          "refId": "D",
-          "select": [
-            [
-              {
-                "params": [
-                  "\"validateState\""
-                ],
-                "type": "column"
-              },
-              {
-                "params": [
-                  "count"
-                ],
-                "type": "aggregate"
-              },
-              {
-                "params": [
-                  "Pending verification"
-                ],
-                "type": "alias"
-              }
-            ]
-          ],
-          "table": "\"default$default\".\"workUnit\"",
-          "timeColumn": "\"createdAt\"",
-          "timeColumnType": "timestamp",
-          "where": [
-            {
-              "name": "$__timeFilter",
-              "params": [],
-              "type": "macro"
-            },
-            {
-              "datatype": "int4",
-              "name": "",
-              "params": [
-                "\"validateState\"",
-                "=",
-                "4"
-              ],
-              "type": "expression"
-            }
-          ]
-        },
-        {
-          "format": "time_series",
-          "group": [
-            {
-              "params": [
-                "$__interval",
-                "none"
-              ],
-              "type": "time"
-            }
-          ],
-          "metricColumn": "none",
-          "rawQuery": false,
-          "rawSql": "SELECT\n  $__time(time_column),\n  value1\nFROM\n  metric_table\nWHERE\n  $__timeFilter(time_column)\n",
-          "refId": "E",
-          "select": [
-            [
-              {
-                "params": [
-                  "\"validateState\""
-                ],
-                "type": "column"
-              },
-              {
-                "params": [
-                  "count"
-                ],
-                "type": "aggregate"
-              },
-              {
-                "params": [
-                  "Failed deadline"
-                ],
-                "type": "alias"
-              }
-            ]
-          ],
-          "table": "\"default$default\".\"workUnit\"",
-          "timeColumn": "\"createdAt\"",
-          "timeColumnType": "timestamp",
-          "where": [
-            {
-              "name": "$__timeFilter",
-              "params": [],
-              "type": "macro"
-            },
-            {
-              "datatype": "int4",
-              "name": "",
-              "params": [
-                "\"validateState\"",
-                "=",
-                "5"
-              ],
-              "type": "expression"
             }
           ]
         }
@@ -386,7 +192,7 @@
           "label": null,
           "logBase": 1,
           "max": null,
-          "min": null,
+          "min": "0",
           "show": true
         },
         {
@@ -411,7 +217,7 @@
       "bars": true,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "PostgreSQL",
+      "datasource": "PostgresSQL",
       "editable": true,
       "error": false,
       "fill": 0,
@@ -797,7 +603,7 @@
       "bars": true,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "PostgreSQL",
+      "datasource": "PostgresSQL",
       "editable": true,
       "error": false,
       "fill": 0,
@@ -979,7 +785,7 @@
       "bars": true,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "PostgreSQL",
+      "datasource": "PostgresSQL",
       "editable": true,
       "error": false,
       "fill": 0,
@@ -1165,7 +971,7 @@
       "bars": true,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "PostgreSQL",
+      "datasource": "PostgresSQL",
       "editable": true,
       "error": false,
       "fill": 0,
@@ -1353,7 +1159,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "PostgreSQL",
+      "datasource": "PostgresSQL",
       "editable": true,
       "error": false,
       "fill": 0,
@@ -1438,12 +1244,12 @@
               "type": "macro"
             },
             {
-              "datatype": "varchar",
+              "datatype": "text",
               "name": "",
               "params": [
-                "job",
+                "\"jobName\"",
                 "=",
-                "'cjztfuvi2000a0744cnqkl3p7'"
+                "'getDevices'"
               ],
               "type": "expression"
             }
@@ -1480,7 +1286,7 @@
               },
               {
                 "params": [
-                  "getAllWork"
+                  "devicePowerRatings"
                 ],
                 "type": "alias"
               }
@@ -1496,12 +1302,12 @@
               "type": "macro"
             },
             {
-              "datatype": "varchar",
+              "datatype": "text",
               "name": "",
               "params": [
-                "job",
+                "\"jobName\"",
                 "=",
-                "'cjztfvt3z0k4g0744hs6nkv03'"
+                "'devicePowerRatings'"
               ],
               "type": "expression"
             }
@@ -1538,7 +1344,7 @@
               },
               {
                 "params": [
-                  "devicePowerRatings"
+                  "getRvnWork"
                 ],
                 "type": "alias"
               }
@@ -1554,12 +1360,12 @@
               "type": "macro"
             },
             {
-              "datatype": "varchar",
+              "datatype": "text",
               "name": "",
               "params": [
-                "job",
+                "\"jobName\"",
                 "=",
-                "'cjztg0g6h1poa0744o3wwzfpk'"
+                "'getRvnWork'"
               ],
               "type": "expression"
             }
@@ -1613,7 +1419,7 @@
       "bars": true,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "PostgreSQL",
+      "datasource": "PostgresSQL",
       "editable": true,
       "error": false,
       "fill": 0,
@@ -1741,6 +1547,266 @@
         "align": false,
         "alignLevel": null
       }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "PostgresSQL",
+      "editable": true,
+      "error": false,
+      "fill": 0,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 6,
+        "w": 11,
+        "x": 12,
+        "y": 18
+      },
+      "id": 8,
+      "interval": ">600s",
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "connected",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 1,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "format": "time_series",
+          "group": [
+            {
+              "params": [
+                "$__interval",
+                "none"
+              ],
+              "type": "time"
+            }
+          ],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  floor(extract(epoch from \"createdAt\")/3600)*3600 AS \"time\",\n  sum(( regexp_split_to_array(split_part( results , ',',1 ),':'))[2]::int ) AS updatedWU\nFROM\n  \"default$default\".\"CronRun\"\nWHERE\n  $__timeFilter(\"createdAt\") AND\n  \"jobName\" = 'getBoincWork'\nGROUP BY 1\nORDER BY 1\n",
+          "refId": "B",
+          "select": [
+            [
+              {
+                "params": [
+                  "runtime"
+                ],
+                "type": "column"
+              },
+              {
+                "params": [
+                  "sum"
+                ],
+                "type": "aggregate"
+              },
+              {
+                "params": [
+                  "getDevices"
+                ],
+                "type": "alias"
+              }
+            ]
+          ],
+          "table": "\"default$default\".\"CronRun\"",
+          "timeColumn": "\"createdAt\"",
+          "timeColumnType": "timestamp",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            },
+            {
+              "datatype": "text",
+              "name": "",
+              "params": [
+                "\"jobName\"",
+                "=",
+                "'getDevices'"
+              ],
+              "type": "expression"
+            }
+          ]
+        },
+        {
+          "format": "time_series",
+          "group": [
+            {
+              "params": [
+                "$__interval",
+                "none"
+              ],
+              "type": "time"
+            }
+          ],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  floor(extract(epoch from \"createdAt\")/3600)*3600 AS \"time\",\n  sum(( regexp_split_to_array(split_part( results , ',',2 ),':'))[2]::int ) AS newWU\nFROM\n  \"default$default\".\"CronRun\"\nWHERE\n  $__timeFilter(\"createdAt\") AND\n  \"jobName\" = 'getBoincWork'\nGROUP BY 1\nORDER BY 1\n",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "runtime"
+                ],
+                "type": "column"
+              },
+              {
+                "params": [
+                  "sum"
+                ],
+                "type": "aggregate"
+              },
+              {
+                "params": [
+                  "getDevices"
+                ],
+                "type": "alias"
+              }
+            ]
+          ],
+          "table": "\"default$default\".\"CronRun\"",
+          "timeColumn": "\"createdAt\"",
+          "timeColumnType": "timestamp",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            },
+            {
+              "datatype": "text",
+              "name": "",
+              "params": [
+                "\"jobName\"",
+                "=",
+                "'getDevices'"
+              ],
+              "type": "expression"
+            }
+          ]
+        },
+        {
+          "format": "time_series",
+          "group": [
+            {
+              "params": [
+                "$__interval",
+                "none"
+              ],
+              "type": "time"
+            }
+          ],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  floor(extract(epoch from \"createdAt\")/3600)*3600 AS \"time\",\n  sum(( regexp_split_to_array(split_part( results , ',',3 ),':'))[2]::int ) AS totalWU\nFROM\n  \"default$default\".\"CronRun\"\nWHERE\n  $__timeFilter(\"createdAt\") AND\n  \"jobName\" = 'getBoincWork'\nGROUP BY 1\nORDER BY 1\n",
+          "refId": "C",
+          "select": [
+            [
+              {
+                "params": [
+                  "runtime"
+                ],
+                "type": "column"
+              },
+              {
+                "params": [
+                  "sum"
+                ],
+                "type": "aggregate"
+              },
+              {
+                "params": [
+                  "getDevices"
+                ],
+                "type": "alias"
+              }
+            ]
+          ],
+          "table": "\"default$default\".\"CronRun\"",
+          "timeColumn": "\"createdAt\"",
+          "timeColumnType": "timestamp",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            },
+            {
+              "datatype": "text",
+              "name": "",
+              "params": [
+                "\"jobName\"",
+                "=",
+                "'getDevices'"
+              ],
+              "type": "expression"
+            }
+          ]
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "WU stats",
+      "tooltip": {
+        "msResolution": false,
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
     }
   ],
   "refresh": false,
@@ -1751,7 +1817,7 @@
     "list": []
   },
   "time": {
-    "from": "now-2d",
+    "from": "now-3h",
     "to": "now"
   },
   "timepicker": {
@@ -1782,5 +1848,5 @@
   "timezone": "browser",
   "title": "boid Node Validator",
   "uid": "000000010",
-  "version": 9
+  "version": 4
 }
