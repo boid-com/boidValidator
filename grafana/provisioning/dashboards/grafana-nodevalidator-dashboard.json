@@ -16,6 +16,7 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
+  "id": 1,
   "links": [],
   "panels": [
     {
@@ -1546,6 +1547,266 @@
         "align": false,
         "alignLevel": null
       }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "PostgresSQL",
+      "editable": true,
+      "error": false,
+      "fill": 0,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 6,
+        "w": 11,
+        "x": 12,
+        "y": 18
+      },
+      "id": 8,
+      "interval": ">600s",
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "connected",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 1,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "format": "time_series",
+          "group": [
+            {
+              "params": [
+                "$__interval",
+                "none"
+              ],
+              "type": "time"
+            }
+          ],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  floor(extract(epoch from \"createdAt\")/3600)*3600 AS \"time\",\n  sum(( regexp_split_to_array(split_part( results , ',',1 ),':'))[2]::int ) AS updatedWU\nFROM\n  \"default$default\".\"CronRun\"\nWHERE\n  $__timeFilter(\"createdAt\") AND\n  \"jobName\" = 'getBoincWork'\nGROUP BY 1\nORDER BY 1\n",
+          "refId": "B",
+          "select": [
+            [
+              {
+                "params": [
+                  "runtime"
+                ],
+                "type": "column"
+              },
+              {
+                "params": [
+                  "sum"
+                ],
+                "type": "aggregate"
+              },
+              {
+                "params": [
+                  "getDevices"
+                ],
+                "type": "alias"
+              }
+            ]
+          ],
+          "table": "\"default$default\".\"CronRun\"",
+          "timeColumn": "\"createdAt\"",
+          "timeColumnType": "timestamp",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            },
+            {
+              "datatype": "text",
+              "name": "",
+              "params": [
+                "\"jobName\"",
+                "=",
+                "'getDevices'"
+              ],
+              "type": "expression"
+            }
+          ]
+        },
+        {
+          "format": "time_series",
+          "group": [
+            {
+              "params": [
+                "$__interval",
+                "none"
+              ],
+              "type": "time"
+            }
+          ],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  floor(extract(epoch from \"createdAt\")/3600)*3600 AS \"time\",\n  sum(( regexp_split_to_array(split_part( results , ',',2 ),':'))[2]::int ) AS newWU\nFROM\n  \"default$default\".\"CronRun\"\nWHERE\n  $__timeFilter(\"createdAt\") AND\n  \"jobName\" = 'getBoincWork'\nGROUP BY 1\nORDER BY 1\n",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "runtime"
+                ],
+                "type": "column"
+              },
+              {
+                "params": [
+                  "sum"
+                ],
+                "type": "aggregate"
+              },
+              {
+                "params": [
+                  "getDevices"
+                ],
+                "type": "alias"
+              }
+            ]
+          ],
+          "table": "\"default$default\".\"CronRun\"",
+          "timeColumn": "\"createdAt\"",
+          "timeColumnType": "timestamp",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            },
+            {
+              "datatype": "text",
+              "name": "",
+              "params": [
+                "\"jobName\"",
+                "=",
+                "'getDevices'"
+              ],
+              "type": "expression"
+            }
+          ]
+        },
+        {
+          "format": "time_series",
+          "group": [
+            {
+              "params": [
+                "$__interval",
+                "none"
+              ],
+              "type": "time"
+            }
+          ],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  floor(extract(epoch from \"createdAt\")/3600)*3600 AS \"time\",\n  sum(( regexp_split_to_array(split_part( results , ',',3 ),':'))[2]::int ) AS totalWU\nFROM\n  \"default$default\".\"CronRun\"\nWHERE\n  $__timeFilter(\"createdAt\") AND\n  \"jobName\" = 'getBoincWork'\nGROUP BY 1\nORDER BY 1\n",
+          "refId": "C",
+          "select": [
+            [
+              {
+                "params": [
+                  "runtime"
+                ],
+                "type": "column"
+              },
+              {
+                "params": [
+                  "sum"
+                ],
+                "type": "aggregate"
+              },
+              {
+                "params": [
+                  "getDevices"
+                ],
+                "type": "alias"
+              }
+            ]
+          ],
+          "table": "\"default$default\".\"CronRun\"",
+          "timeColumn": "\"createdAt\"",
+          "timeColumnType": "timestamp",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            },
+            {
+              "datatype": "text",
+              "name": "",
+              "params": [
+                "\"jobName\"",
+                "=",
+                "'getDevices'"
+              ],
+              "type": "expression"
+            }
+          ]
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "WU stats",
+      "tooltip": {
+        "msResolution": false,
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
     }
   ],
   "refresh": false,
@@ -1556,7 +1817,7 @@
     "list": []
   },
   "time": {
-    "from": "now-1h",
+    "from": "now-3h",
     "to": "now"
   },
   "timepicker": {
@@ -1587,5 +1848,5 @@
   "timezone": "browser",
   "title": "boid Node Validator",
   "uid": "000000010",
-  "version": 3
+  "version": 4
 }
