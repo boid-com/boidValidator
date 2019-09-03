@@ -54,6 +54,7 @@ type CronRun {
   runtime: Int
   results: Json
   errors: Json
+  jobName: String
 }
 
 type workUnit {

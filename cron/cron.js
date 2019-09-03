@@ -6,11 +6,12 @@ async function run(jobName){
   try {
     logger.info('starting',jobName)
     const existingJob = await db.gql(`{cronJob(where:{name:"${jobName}"}){name}}`)
-    if(!existingJob) await db.gql(`mutation{createCronJob(data:{name:"${jobName}"}){name}}`)
-    run = await db.gql(`mutation{createCronRun(data:{job:{connect:{name:"${jobName}"}}}){id createdAt}}`)
+    if(!existingJob) await db.gql(`mutation{createCronJob(data:{ id:"${jobName}" name:"${jobName}"}){name}}`)
+    run = await db.gql(`mutation{createCronRun(data:{ jobName:"${jobName}" job:{connect:{name:"${jobName}"}}}){id createdAt}}`)
     const job = await require('./jobs/'+jobName)()
     const runtime = Date.now() - Date.parse(run.createdAt) 
-    const cronRun = await db.gql(`mutation($results:Json $errors:Json){updateCronRun(where:{id:"${run.id}"}
+    const cronRun = await db.gql(`mutation($results:Json $errors:Json){
+      updateCronRun(where:{id:"${run.id}"}
       data:{results:$results errors:$errors runtime:${runtime}})
       {id}}`,job)
     return {jobName,cronRun,runtime,job}

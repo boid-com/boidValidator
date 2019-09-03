@@ -9,8 +9,8 @@ async function start(){
       for (job of group.jobs){
         AllJobs.push(db.gql(`mutation{
           upsertCronJob(where:{name:"${job.name}"} 
-            create:{name:"${job.name}"}
-            update:{name:"${job.name}"}
+            create:{id:"${job.name}" name:"${job.name}"}
+            update:{id:"${job.name}" name:"${job.name}"}
           ){name}
         }`))
         console.log("Registering Job: "+ job + " group: " + group.group  )
