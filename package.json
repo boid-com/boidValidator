@@ -1,6 +1,6 @@
 {
   "name": "boidvalidator",
-  "version": "1.0.0",
+  "version": "1.5.0",
   "description": "This is the backend code that Boid Validator nodes can run to reach consensus on Boid Power contributions,",
   "main": "",
   "dependencies": {
