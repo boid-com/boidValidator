@@ -6,6 +6,8 @@ const reflect = p => p.then(data => ({data, status: "fulfilled" }),e => ({e, sta
 const ax = require('axios')
 const logger = require('logging').default('devicePowerRatings')
 const reportDevicePowers = require('./util/reportDevicePowers')
+ax.defaults.timeout = 20000
+
 const chunkSize = 300
 Array.prototype.shuffle = function() {
   var i = this.length, j, temp;

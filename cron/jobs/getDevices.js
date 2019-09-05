@@ -1,5 +1,6 @@
 const db = require('../../db')
 const ax = require('axios')
+ax.defaults.timeout = 20000
 const env = require('../../.env.json')
 const logger = require('logging').default('getDevices')
 

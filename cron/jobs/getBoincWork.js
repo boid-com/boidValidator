@@ -1,4 +1,5 @@
 var ax = require('axios')
+ax.defaults.timeout = 20000
 const db = require('../../db.js')
 const ms = require('human-interval')
 const sleep = ms => new Promise(res => setTimeout(res, ms))

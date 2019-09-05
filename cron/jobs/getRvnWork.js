@@ -1,4 +1,4 @@
-const ax = require('axios').create()
+const ax = require('axios')
 const db = require('../../db.js')
 const env = require('../../.env.json')
 const sleep = ms => new Promise(res => setTimeout(res, ms))
