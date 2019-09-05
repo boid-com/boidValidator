@@ -1,16 +1,16 @@
-const ax = require('axios')
+const ax = require('axios').create()
 const db = require('../../db.js')
 const env = require('../../.env.json')
 const sleep = ms => new Promise(res => setTimeout(res, ms))
 const logger = require('logging').default('getRvnWork')
 const ms = require('human-interval')
 
-ax.defaults.headers.common['database'] = 'yiimpfrontend'
+ax.defaults.timeout = 20000
+// ax.defaults.headers.common['auth'] = ''
 ax.defaults.headers.common['Content-Type'] = 'application/json'
-ax.defaults.baseURL = 'http://rvn.boid.com:4444/sql'
+ax.defaults.baseURL = 'https://rvn.boid.com/api'
 
 logger.info(ax.defaults.baseURL)
-var hash = require('node-object-hash')({sort:false, coerce:false}).hash
 var hash = require('node-object-hash')({sort:false, coerce:false}).hash
 var workers
 
@@ -19,7 +19,7 @@ async function createShareData(share,deviceId){
   if (share.valid = 1) valid = true
   else valid = false
   const time = new Date(share.time * 1000)
-  const shareHash = hash(share)
+  const shareHash = hash(share,{alg:"rsa-sha1"})
   const result = db.gql(`
     mutation($time:DateTime!){
       upsertshareData(
@@ -43,24 +43,13 @@ async function createShareData(share,deviceId){
 async function doQuery(worker,ModTime) {
   return new Promise(async(res,rej)=>{
     try {
-      var query = `
-        select id, userid, time, error, valid, difficulty, share_diff
-        from shares
-        where workerid=${worker.id}
-        and coinid=1425
-        and time > ${ModTime/1000}
-      `
-      // console.log(query)
-      query = query.replace(/(\r\n|\n|\r)/gm, "")
       try {
         logger.info('Getting RvnShares...')
-        var shares = (await ax.post('',{query})).data
+        var shares = (await ax.get(`/getWorkerShares/${worker.id}?since=${ModTime}`)).data
         logger.info('Downloaded RvnShares:',shares.length)
       } catch (error) {
-        logger.error(error)      
-        logger.info('sleeping and will try again')
-        var shares = (await ax.post('',{query})).data
-        await sleep(5000)
+        console.log(error)
+        logger.error(error)
       }
       if (shares.length === 0) return res()
       logger.info('Writing RvnShares to DB...')
@@ -70,6 +59,7 @@ async function doQuery(worker,ModTime) {
       logger.info('Finished writing RvnShares to DB')
       res()
     } catch (error) {
+      console.log(error)
       logger.info(error)
       rej(error)
     }
@@ -80,17 +70,15 @@ async function doQuery(worker,ModTime) {
 
 async function init(){
   try {
-    workers = (await ax.post('',{
-      query:`select id, userid, time, difficulty, ip, name, worker from workers`
-    })).data.filter(el => el.worker != '')
+    workers = (await ax.get('/getWorkers')).data.filter(el => el.worker != '')
     logger.info('')
     logger.info('Found',workers.length,'rvnWorkers')
 
     let ModTime
     const lastRun = (await db.gql(`{ cronRuns( last:1 where: {runtime_not:null job: { name: "getRvnWork" } }) {
       errors runtime createdAt } }`))[0]
-    if (!lastRun || lastRun.errors.length > 0) ModTime = Date.now() - ms('two hours')
-    else ModTime = Date.parse(lastRun.createdAt) - ms('one minute')
+    if (!lastRun || lastRun.errors.length > 0) ModTime = parseInt(Date.now() - ms('two hours'))
+    else ModTime = parseInt(Date.parse(lastRun.createdAt) - ms('one minute'))
     logger.info('Getting RvnShares since:',new Date(ModTime).toLocaleString())
 
     for (worker of workers){
