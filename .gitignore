@@ -1,6 +1,7 @@
 docker-compose.yml
 .env.json
 ecosystem.config.js
+grafana/data
 
 # Logs
 logs
