@@ -25,6 +25,11 @@ sudo curl -L "https://github.com/docker/compose/releases/download/1.24.1/docker-
 sudo chmod +x /usr/local/bin/docker-compose
 ```
 
+Network time protocol is essential for accurate validation
+```
+sudo apt install ntp
+```
+
 Prisma & PM2
 ```
 npm i -g prisma pm2
@@ -81,6 +86,16 @@ pm2 startup
 
 PM2 will now daemonize the tasks and run it in the background. When the task crashes or finishes running, PM2 will automatically restart it. So long as your tasks are running without any major errors, your node should easily be able to download data and make accurate Boid Power reports multiple times each round. 
 
+The node validator comes with a built-in grafana docker that queries directly the postgres DB for metrics. 
+It is auto-provisioning a master dashboard with initial usefull metrics. 
+To access the grafana dashboard simply point your browser to the IP address of the node validator port 80.
+In case you want to inspect how the panels are created you can logon as the administrator by using:
+```
+   username: admin
+   password: boid
+```
+you can always provide feedback suggestions to its author github:ghobson2013
+ 
 ## Reference
 
 ### jobgroups.json
