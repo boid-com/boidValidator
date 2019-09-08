@@ -60,8 +60,9 @@ Deploy Prisma Schema: This prepares the database to store validator data.
 ```
 prisma deploy
 ```
-Prepare the .env.json file.
+Prepare the .env.json and ecosystem.config.js files.
 ```
+cp ./util/example.ecosystem.config.js ./ecosystem.config.js
 cp ./util/example.env.json .env.json
 ```
 Modify the .env.json file using any text editor. The changes you want to make are:
