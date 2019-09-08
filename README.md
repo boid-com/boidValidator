@@ -62,10 +62,10 @@ prisma deploy
 ```
 Prepare the .env.json file.
 ```
-cp example.env.json .env.json
+cp ./util/example.env.json .env.json
 ```
 Modify the .env.json file using any text editor. The changes you want to make are:
-- Provide your validator secret key associated with the EOS account with your BOID stake. Do not use your active or owner key but instead you need to register a special permission on your Validator account EOS account.
+- Provide your validator secret key associated with the EOS account with your BOID stake. Do not use your active or owner key but instead you need to register a special permission on your Validator EOS account.
 - Enter the wcg api key: will be provided in the private telegram group
 
 Run one cron group run to ensure there is no error messages.
