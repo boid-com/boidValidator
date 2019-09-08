@@ -28,7 +28,7 @@ services:
     - 80:3000
     volumes:
     - ./grafana/provisioning/:/etc/grafana/provisioning/
-    - ./grafana/data:/var/lib/grafana
+    - grafana_data:/var/lib/grafana
     env_file:
     - ./grafana/config.monitoring
   postgres:
@@ -45,3 +45,4 @@ services:
       - postgres:/var/lib/postgresql/data
 volumes:
   postgres:
+  grafana_data:

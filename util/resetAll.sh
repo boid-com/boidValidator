@@ -1,12 +1,12 @@
 #!/bin/bash
 green=`tput setaf 2`
 reset=`tput sgr0`
-echo "${green}Deleting local DB... ${reset}"
-docker-compose rm -fvs && docker volume prune --force 
-echo "${green}Starting Prisma...${reset}"
+echo "${green}Remove all Validator containers and pruning volumes... ${reset}"
+docker-compose down -v --remove-orphans && docker-compose rm -fvs
+echo "${green}Starting Docker Containers...${reset}"
 docker-compose up -d
 echo "${green}Waiting for Prisma to be ready... ${reset}"
-sleep 15
+sleep 25
 echo "${green}Deploying schema to fresh DB... ${reset}"
 prisma deploy
 echo "${green}Done! The database is ready to be populated. ${reset}"

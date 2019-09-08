@@ -46,7 +46,13 @@ Install NPM dependencies
 ```
 npm i
 ```
-Setup Docker Containers (Postgresql + Prisma)
+Setup the docker-compose file
+```
+cp ./util/example.docker-compose.yml ./docker-compose.yml
+or 
+cp ./util/example.docker-compose-with-grafana.yml ./docker-compose.yml
+```
+Setup Docker Containers
 ```
 docker-compose up -d
 ```
@@ -86,7 +92,7 @@ pm2 startup
 
 PM2 will now daemonize the tasks and run it in the background. When the task crashes or finishes running, PM2 will automatically restart it. So long as your tasks are running without any major errors, your node should easily be able to download data and make accurate Boid Power reports multiple times each round. 
 
-The node validator comes with a built-in grafana docker that queries directly the postgres DB for metrics. 
+The node validator comes with a (optional) built-in grafana docker that queries directly the postgres DB for metrics. 
 It is auto-provisioning a master dashboard with initial usefull metrics. 
 To access the grafana dashboard simply point your browser to the IP address of the node validator port 80.
 In case you want to inspect how the panels are created you can logon as the administrator by using:
@@ -101,7 +107,7 @@ you can always provide feedback suggestions to its author github:ghobson2013
 ### jobgroups.json
 This Json is an array of groups.The jobs are in the /cron/jobs folder. Jobs in a group are run sequentially, but you can run multiple groups in parallel to customize and optimize your validator node jobs.
 
-**sleep:** How long to pause after this group has finished before restarting. You can adjust this based on how long a group takes to run on your machine and how many cycles you want to run each hour. You only should need 2-4 cycles per hour.
+**sleep:** How long to pause after this group has finished before restarting. You can adjust this based on how long a group takes to run on your machine and how many cycles you want to run each hour. You only need to report data once per cycle but there is no harm in making multiple reports for redundancy.
 
 By Default the tasks for group 1 are:
 
@@ -112,7 +118,7 @@ Gets the latest list of devices from the main Boid API. This allows the Validato
 This task is a wrapper around two other jobs (getBoincWork and getRvnWork). This wrapper job simply runs those jobs in parallel. These jobs are responsible for downloading Work Units from wcg and sharedata from rvn.boid.com
 
 **devicePowerRatings:**
-This Job parses the work data from the previous job, associating it with specifc devices and generating a Boid Power score for each device based on the current "round". A round starts/ends each UTC hour, and the validators need to gather information and make a power report about each device before the end of the current round. The Boid Power ratings are grouped into chunks and then hashed with the validator private key to be reported. The reported power ratings from all Validator nodes are then aggregated to reach a final consenus at the end of each round.
+This Job parses the work data from the previous job, associating it with specifc devices and generating a Boid Power score for each device based on the current "round". A round starts/ends each UTC hour, and the validators need to gather information and make a power report about each device before the end of the current round. The Boid Power ratings are grouped into chunks and then signed with the validator private key to be reported. The reported power ratings from all Validator nodes are then aggregated to reach a final consenus at the end of each round.
 
 
 ### Performance tweaks
@@ -124,7 +130,7 @@ The following SQL commands have to be executed directly against the postgresql D
 to your host OS, you will need to modify docker-composer.yml to expose the default postgres port.
 Create an index in the workUnit table, this can be done during runtime.
 ```
-CREATE UNIQUE INDEX "device_index" ON "default$default"."workUnit" USING BTREE ("deviceId");
+CREATE INDEX "device_index" ON "default$default"."workUnit" USING BTREE ("deviceId");
 ```
 If you need to remove the index simply execute:
 ```
@@ -135,9 +141,10 @@ I observed about a 45% improvement in the speed of devicePowerRating cronjob aft
 
 ### Utility functions
 
-Sometimes during testing you want to easily reset your database. I have included a simple script to do this. This will remove all data from your local database and reset it just like new.
+Sometimes during testing you want to easily reset your database. I have included a simple script to do this. This will remove all data from your local database and reset it just like new. 
+
 ```
-sudo sh ./util/resetDB.sh
+sudo sh ./util/resetAll.sh
 ```
 
 ### Join the Validators community
