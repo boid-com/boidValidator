@@ -12,7 +12,7 @@ async function init(reqData){
     await ecc.initialize()
     if (!ecc.isValidPrivate(env.keys.validator)) return logger.error('env.keys.validator is not a valid private key.')
     const auth = ecc.signHash(ecc.sha256(JSON.stringify(reqData)),env.keys.validator)
-    const result = await ax.post(env.boidAPI + 'reportDevicePowers',reqData,{headers:{auth,pubKey:ecc.privateToPublic(env.keys.validator)}})
+    const result = await ax.post(env.boidAPI + 'reportDevicePower',reqData,{headers:{auth,pubKey:ecc.privateToPublic(env.keys.validator)}})
     .catch((result)=>{
       if (result.response.status == 401) return logger.error('Not authorized to report Device Powers! Make sure you setup your validator keys correctly.')
       else throw(result)
@@ -22,7 +22,7 @@ async function init(reqData){
     logger.error(error.message)
     logger.error('There was a problem reporting work units, waiting 10 seconds and trying again...')
     await sleep(ms('10 seconds'))
-    init(devices,globals)
+    init(reqData)
   }
 }
 module.exports = init
