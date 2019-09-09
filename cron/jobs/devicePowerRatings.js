@@ -33,7 +33,7 @@ async function init(devices) {
     if (!devices){
       var now = new Date()
       now.setUTCMinutes(0,0,0)
-      globals = (await ax.post(env.boidAPI + 'getGlobals')).data
+      globals = (await ax.get(env.boidAPI + 'getGlobals')).data
       globals.round = {}
       globals.round.end = now.toISOString()
       globals.round.start = new Date(Date.parse(globals.round.end) - globals.roundLength).toISOString()
