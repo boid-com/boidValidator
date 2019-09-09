@@ -22,7 +22,7 @@ async function addDevice(device){
   }
 }
 async function init(){
-  const devices = (await ax.post( env.boidAPI+'getDevices')).data
+  const devices = (await ax.get( env.boidAPI+'getDevices')).data
   logger.info('')
   logger.info('Found',devices.length,'registered devices')
   logger.info('Upserting devices into DB...')
