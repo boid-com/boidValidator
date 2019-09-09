@@ -20,8 +20,8 @@ async function init(reqData){
     if (result) logger.info('Reported Device Powers:',result.data)
   } catch (error) {
     logger.error(error.message)
-    logger.error('There was a problem reporting work units, waiting 10 seconds and trying again...')
-    await sleep(ms('10 seconds'))
+    logger.error('There was a problem reporting work units, waiting 30 seconds and trying again...')
+    await sleep(ms('30 seconds'))
     init(reqData)
   }
 }

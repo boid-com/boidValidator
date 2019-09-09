@@ -71,15 +71,18 @@ async function init(devices) {
   var boincPowerRatings = allResults[0].data
   var rvnPowerRatings = allResults[1].data
   // logger.info('RESULTS:',boincPowerRatings,rvnPowerRatings)
-  var parsedDevices = []
+  var powerReports = []
   for (device of devices){
     try {
-      var result = Object.assign({id:device.id,rvnPower:0,boincPower:0,boincPending:0},
+      var result = Object.assign(
+        {id:device.id,rvnPower:0,boincPower:0,boincPending:0},
         rvnPowerRatings[device.id],
         boincPowerRatings[device.id])
       result.totalPower = result.rvnPower + result.boincPower
+      result.rvnid = device.rvnid
+      result.wcgid = device.wcgid
       if (result.totalPower === 0) continue
-      else parsedDevices.push(result) 
+      else powerReports.push(result) 
     }catch(error){
       logger.error('Error in device parsing!')
       logger.error(error)
@@ -89,9 +92,9 @@ async function init(devices) {
   var errors = []
   
   var results = {updatedDevices:0,totalBoincPower:0,totalBoincPending:0, totalRvnPower:0,boincDevices:0,rvnDevices:0}
-  if (parsedDevices.length != 0){
+  if (powerReports.length != 0){
     logger.info('Saving and reporting Power Ratings for this chunk.')
-    for (device of parsedDevices){
+    for (device of powerReports){
       try {
         const powerRating = await db.gql(`mutation{
           createDevicePowerRating(
@@ -122,7 +125,7 @@ async function init(devices) {
         continue
       }
     }  
-    const reportData = {parsedDevices,globals}
+    const reportData = {powerReports,globals}
     console.log(JSON.stringify(reportData))
     reportDevicePowers(reportData)
     logger.info(globals,JSON.stringify(results,null,2),errors)
