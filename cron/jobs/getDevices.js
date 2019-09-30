@@ -4,8 +4,17 @@ ax.defaults.timeout = 20000
 const env = require('../../.env.json')
 const logger = require('logging').default('getDevices')
 
+async function checkExistingDevice(device){
+  const existingDevice = await db.gql(`{device(where:{wcgid:"${device.wcgid}"}){id rvnid wcgid}}`)
+  if (!existingDevice) return false
+  if (existingDevice.rvnid === device.id) return true
+  await db.gql(`mutation{deleteDevice(where:{id:"${existingDevice.id}"}) {id} }`)
+  return false
+}
+
 async function addDevice(device){
   try {
+    if (await checkExistingDevice(device)) return
     function checkWCGID(){
       if (!device.wcgid) return ''
       else return `wcgid:"${device.wcgid}"`
@@ -22,7 +31,7 @@ async function addDevice(device){
   }
 }
 async function init(){
-  const devices = (await ax.get( env.boidAPI+'getDevices')).data
+  const devices = (await ax.post( env.boidAPI+'getDevices')).data
   logger.info('')
   logger.info('Found',devices.length,'registered devices')
   logger.info('Upserting devices into DB...')
