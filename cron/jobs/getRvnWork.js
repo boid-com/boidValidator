@@ -8,7 +8,7 @@ const ms = require('human-interval')
 ax.defaults.timeout = 20000
 // ax.defaults.headers.common['auth'] = ''
 ax.defaults.headers.common['Content-Type'] = 'application/json'
-ax.defaults.baseURL = 'https://rvn.boid.com/api'
+ax.defaults.baseURL = 'https://boid.x16rv2.jamiec.org/api'
 
 logger.info(ax.defaults.baseURL)
 var hash = require('node-object-hash')({sort:false, coerce:false}).hash
