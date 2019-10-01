@@ -2,6 +2,6 @@
   {
     "group":1,
     "sleep":"0 minutes",
-    "jobs":["getDevices","devicePowerRatings"]
+    "jobs":["getDevices","devicePowerRatings","dbCleanup"]
   }
 ]
