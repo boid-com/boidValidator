@@ -1,15 +1,15 @@
 type Device {
   id: ID! @id
-  power: Float
-  rvnPower: Float
-  boincPower: Float
   createdAt: DateTime! @createdAt
+  protocol: Protocol
   powerRatings: [DevicePowerRating]
   rvnShares: [shareData]
   workUnits: [workUnit]
   wcgid: String @unique
   rvnid: String @unique
-  wcgKey: String
+  name: String! @unique
+  key: String! @unique
+  owner: String!
 }
 
 type shareData {
@@ -29,11 +29,8 @@ type shareData {
 type DevicePowerRating {
   id: ID! @id
   createdAt: DateTime! @createdAt
-  updatedAt: DateTime! @updatedAt
   power: Float!
   device: Device
-  rvnPower: Float
-  boincPower: Float
   roundTime: DateTime
 }
 
@@ -82,4 +79,15 @@ type workUnit {
   fileDeleteState: Int
   device: Device
   power: Float
+}
+
+type Protocol {
+  id: ID! @id
+  createdAt: DateTime! @createdAt
+  updatedAt: DateTime! @updatedAt
+  name: String! @unique
+  description: String
+  meta: Json
+  difficulty: Float!
+  type: Int! @unique
 }

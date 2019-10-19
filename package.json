@@ -5,15 +5,20 @@
   "main": "",
   "dependencies": {
     "axios": "^0.19.0",
+    "cors": "^2.8.5",
+    "eosjs": "^20.0.0",
     "eosjs-ecc": "^4.0.4",
+    "express": "^4.17.1",
     "graphql-request": "^1.8.2",
     "human-interval": "^0.1.6",
     "logging": "^3.2.0",
-    "node-object-hash": "^1.4.2"
+    "node-object-hash": "^1.4.2",
+    "roundround": "^0.2.0"
   },
   "devDependencies": {},
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "sync": "rsync -arv --exclude node_modules ./* ell:~/boidValidator"
   },
   "repository": {
     "type": "git",

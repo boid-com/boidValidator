@@ -1,43 +1,29 @@
 const db = require('../../db')
 const ax = require('axios')
+const eosjs = require('../../eosjs')
 ax.defaults.timeout = 20000
 const env = require('../../.env.json')
 const logger = require('logging').default('getDevices')
+var errors = []
 
-async function checkExistingDevice(device){
-  const existingDevice = await db.gql(`{device(where:{wcgid:"${device.wcgid}"}){id rvnid wcgid}}`)
-  if (!existingDevice) return false
-  if (existingDevice.rvnid === device.id) return true
-  await db.gql(`mutation{deleteDevice(where:{id:"${existingDevice.id}"}) {id} }`)
-  return false
-}
-
-async function addDevice(device){
+async function init () {
   try {
-    if (await checkExistingDevice(device)) return
-    function checkWCGID(){
-      if (!device.wcgid) return ''
-      else return `wcgid:"${device.wcgid}"`
+    const devices = await eosjs().queries.getAllDevices()
+    console.log('Got Devices:', devices.length)
+    for (d of devices) {
+      await db.gql(`
+        mutation{upsertDevice(
+          where:{name:"${d.device_name}"} 
+          update:{}
+          create:{key:"${d.device_key}" owner:"${d.owner}" name:"${d.device_name}" protocol:{connect:{type:1}} }
+        ){id}}`).catch(err => errors.push(err))
     }
-    const result = await db.gql(`
-      mutation{upsertDevice(
-        where:{rvnid:"${device.id}"} 
-        update:{${checkWCGID()}}
-        create:{ ${checkWCGID()} rvnid:"${device.id}"}
-      ){id}}`)
-    return result
+    return { results: { numDevices: devices.length }, errors }
   } catch (error) {
     logger.error(error)
+    errors.push(error)
+    return { errors }
   }
-}
-async function init(){
-  const devices = (await ax.get( env.boidAPI+'getDevices')).data
-  logger.info('')
-  logger.info('Found',devices.length,'registered devices')
-  logger.info('Upserting devices into DB...')
-  for (device of devices){await addDevice(device)}
-  logger.info('finished upserting devices')
-  return {results:{deviceCount:devices.length}}
 }
 if (require.main === module && process.argv[2] === 'dev') init().catch(logger.info)
 module.exports = init

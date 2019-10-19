@@ -1,14 +1,14 @@
 
-function createWorkUnit(data){
-  function unitDevice(){
+function createWorkUnit (data) {
+  function unitDevice () {
     if (data.device) return `device:{connect:{id:"${data.device.id}"}}`
     else return ''
   }
-  function validatedAt(){
+  function validatedAt () {
     if (data.validatedAt) return `validatedAt:"${data.validatedAt}"`
     else return ''
   }
-  return`
+  return `
   mutation($ReceivedTime:DateTime $ReportDeadline: DateTime $SentTime: DateTime){
     upsertworkUnit(
       where: {

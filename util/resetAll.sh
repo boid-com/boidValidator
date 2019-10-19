@@ -10,3 +10,4 @@ sleep 25
 echo "${green}Deploying schema to fresh DB... ${reset}"
 prisma deploy
 echo "${green}Done! The database is ready to be populated. ${reset}"
+echo "${green}Run setupDbOptimizations.js to improve db performance.${reset}"

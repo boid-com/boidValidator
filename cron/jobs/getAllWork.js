@@ -1,16 +1,16 @@
 const getBoincWork = require('./getBoincWork')
 const getRvnData = require('./getRvnWork')
-const reflect = p => p.then(v => ({v, status: "fulfilled" }),e => ({e, status: "rejected" }))
+const reflect = p => p.then(v => ({ v, status: 'fulfilled' }), e => ({ e, status: 'rejected' }))
 const logger = require('logging').default('getAllWork')
 
-async function init(){
+async function init () {
   try {
-    const results = await Promise.all([reflect(getBoincWork()),reflect(getRvnData())])
+    const results = await Promise.all([reflect(getBoincWork()), reflect(getRvnData())])
     logger.info('Finished getAllWork')
-    return {results:{boincData:results[0],rvnData:results[1]}}
+    return { results: { boincData: results[0], rvnData: results[1] } }
   } catch (error) {
     logger.error(error)
-    return {errors:[error]}
+    return { errors: [error] }
   }
 }
 
