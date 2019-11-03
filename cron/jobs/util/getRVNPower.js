@@ -8,7 +8,7 @@ async function handleDevice (device,globals) {
   const rvnShares = await db.gql(`query($roundStart:DateTime $roundEnd:DateTime){
     shareDatas( where:{deviceId:"${device.rvnid}" valid:true time_gt:$roundStart time_lt:$roundEnd })
       {time valid difficulty shareDifficulty shareHash}}`, { roundStart, roundEnd })
-  if (!rvnShares || rvnShares.length == 0) continue
+  if (!rvnShares || rvnShares.length == 0) return
   logger.info('#Shares', rvnShares.length)
   var mutations = []
   const parsedShares = rvnShares.map(share => {
