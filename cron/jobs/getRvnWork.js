@@ -22,7 +22,7 @@ async function createShareData (share, deviceId) {
   const shareHash = hash(share, { alg: 'rsa-sha1' })
   const result = db.gql(`
     mutation($time:DateTime!){
-      upsertshareData(
+      upsertShareData(
         where:{shareHash:"${shareHash}"}
         update:{}
         create:{

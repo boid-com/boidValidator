@@ -5,8 +5,8 @@ services:
     logging:
       driver: "json-file"
       options:
-          max-file: 5
-          max-size: 10m
+        max-file: "5"
+        max-size: "10m"
     restart: always
     ports: # Uncomment only one line
     # Exposed to localhost only
@@ -31,8 +31,8 @@ services:
     logging:
       driver: "json-file"
       options:
-          max-file: "5"
-          max-size: "10m"
+        max-file: "5"
+        max-size: "10m"
     restart: always
     ports:
     - "127.0.0.1:5432:5432"

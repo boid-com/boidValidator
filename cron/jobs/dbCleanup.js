@@ -4,14 +4,14 @@ const ms = require('human-interval')
 
 async function init () {
   var lookback = require('../../.env').cleanupLookback
-  if (!lookback) lookback = '1 week'
+  if (!lookback) lookback = '4 weeks'
   const sinceTime = new Date(Date.now() - ms(lookback)).toISOString()
   logger.info('Deleting older than:', sinceTime)
   const results = {
     sinceTime,
     deletedShareDatas: (await db.gql(`mutation{deleteManyShareDatas(where:{time_lt:"${sinceTime}"}){count}}`)).count,
     deletedWorkUnits: (await db.gql(`mutation{deleteManyWorkUnits(where:{validatedAt_lt:"${sinceTime}"}){count}}`)).count,
-    deletedPowerRatings: (await db.gql(`mutation{deleteManyDevicePowerRatings(where:{createdAt_lt:"${sinceTime}"}){count}}`)).count
+    deletedPowerRatings: (await db.gql(`mutation{deleteManyPowerRatings(where:{createdAt_lt:"${sinceTime}"}){count}}`)).count
   }
   return { results }
 }

@@ -3,6 +3,7 @@ const db = require('../../db')
 const logger = require('logging').default('getProtocols')
 
 async function init () {
+  return
   var errors = []
   try {
     const protocols = await eosjs().queries.getProtocols()

@@ -10,7 +10,7 @@ function createWorkUnit (data) {
   }
   return `
   mutation($ReceivedTime:DateTime $ReportDeadline: DateTime $SentTime: DateTime){
-    upsertworkUnit(
+    upsertWorkUnit(
       where: {
         workUnitId: ${data.WorkunitId}
       }

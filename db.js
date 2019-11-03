@@ -2,13 +2,22 @@ const { GraphQLClient } = require('graphql-request')
 const env = require('./.env')
 const sleep = ms => new Promise(res => setTimeout(res, ms))
 const logger = require('logging').default('db')
+var EventEmitter = require('events')
 
+Array.prototype.shuffle = function () {
+  var i = this.length; var j; var temp
+  if (i == 0) return this
+  while (--i) {
+    j = Math.floor(Math.random() * (i + 1))
+    temp = this[i]
+    this[i] = this[j]
+    this[j] = temp
+  }
+  return this
+}
 var gqlEndpoint
-if (env.stage === 'prod') {
-  if (env.local) gqlEndpoint = 'http://localhost:4466'
-  else gqlEndpoint = 'https://api.boid.com/prisma'
-} else if (env.local) gqlEndpoint = 'http://localhost:4477'
-else gqlEndpoint = 'https://api.boid.com/dev'
+gqlEndpoint = env.prismaAPI
+
 logger.info(env.stage, gqlEndpoint)
 const remoteEndpoint = 'https://api.boid.com/prisma'
 const token = env.prismaJwt
@@ -54,42 +63,34 @@ const mutation = async (gqli, vars, type, db) => {
   return gql(gqli, vars, type, db)
 }
 
-async function batch (type, query, vars, batchSize, thisClient) {
+function batch ({type, query, vars, batchSize}, thisClient) {
+  const emitter = new EventEmitter()
   if (!thisClient) var client = dbClient
   else var client = thisClient
-  // logger.info(client)
-  if (!batchSize) batchSize = 1000
-  var results = []
-  var i = 0
+  if (!batchSize) batchSize = 5
   if (!vars) vars = {}
 
-  async function loop () {
+  var results = []
+  var i = 0
+
+  function loop () {
     vars.i = i
-    var data = await getData(type, query, vars, client)
-    if (data) {
-      // process.stdout.write("|")
-      data.forEach((el) => { results.push(el) })
-      i += batchSize
-      await sleep(50)
-      await loop()
-    }
+    getData(type, query, vars, client).then((data) => {
+      if (data) {
+        emitter.emit('data',data)
+        data.forEach((el) => { results.push(el) })
+        i += batchSize
+        loop()
+      }
+    })
   }
-  await loop()
-  // logger.info('\nBatchLength:',results.length)
-  return results
+  loop()
+  return emitter
 }
 
 var getData = async function (type, query, vars, client) {
   var data = await client.request(query, vars).catch(logger.error)
-  if (typeof type !== 'string') {
-    if (data[type[0]][type[1]].length > 0) {
-      return data[type[0]][type[1]]
-    } else return null
-  } else {
-    if (data[type].length > 0) {
-      return data[type]
-    } else return null
-  }
+  return data[type]
 }
 
 const remote = {

@@ -2,17 +2,18 @@ type Device {
   id: ID! @id
   createdAt: DateTime! @createdAt
   protocol: Protocol
-  powerRatings: [DevicePowerRating]
-  rvnShares: [shareData]
-  workUnits: [workUnit]
+  powerRatings: [PowerRating!]!
+  rvnShares: [ShareData!]!
+  workUnits: [WorkUnit!]!
   wcgid: String @unique
+  wcgAccount: String
   rvnid: String @unique
   name: String! @unique
   key: String! @unique
   owner: String!
 }
 
-type shareData {
+type ShareData {
   id: ID! @id
   createdAt: DateTime! @createdAt
   shareId:Int!
@@ -26,12 +27,32 @@ type shareData {
   deviceId: String!
 }
 
-type DevicePowerRating {
+type PowerRound {
+  id: ID! @id
+  createdAt: DateTime! @createdAt
+  start: DateTime!
+  end: DateTime!
+  reports: [PowerReport!]!
+  ratings: [PowerRating!]!
+}
+
+type PowerReport {
+  id: ID! @id
+  round: PowerRound
+  ratings: [PowerRating!]!
+  validated: Boolean! @default(value:false)
+  txid: String
+  txMeta:String
+}
+
+type PowerRating {
   id: ID! @id
   createdAt: DateTime! @createdAt
   power: Float!
+  units: Float!
   device: Device
-  roundTime: DateTime
+  round: PowerRound
+  report: PowerReport
 }
 
 type CronJob {
@@ -54,7 +75,7 @@ type CronRun {
   jobName: String
 }
 
-type workUnit {
+type WorkUnit {
   id: ID! @id
   createdAt: DateTime! @createdAt
   updatedAt: DateTime! @updatedAt
