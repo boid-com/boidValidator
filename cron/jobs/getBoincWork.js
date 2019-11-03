@@ -12,7 +12,7 @@ var results = {
   totalWU: 0
 }
 
-var apiURL = 'https://www.worldcommunitygrid.org/api/members/boid.com/results?code=' + env.wcgKey
+var apiURL = 'https://www.worldcommunitygrid.org/api/members/boid.com/results?code=' + env.wcg.key
 var apiParams = { Limit: 250, ValidateState: 1 }
 var getData = async function (i, apiParams) {
   var offsetParams = Object.assign(apiParams, {})
