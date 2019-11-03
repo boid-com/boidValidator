@@ -37,7 +37,7 @@ async function getProtocolDevicePowers (protocolName, globals) {
     const deviceChunks = chunk(protocolDevices.shuffle(), batchSize)
     var makePowerReports
     if (protocolName === 'rvn') makePowerReports = getRVNPower
-    else if (protocolName === 'wcg') makePowerReports = getWCGPower
+    else if (protocolName === 'wcg') return {}
     console.log(deviceChunks)
     for (var iChunk of deviceChunks) {
       // console.log('Chunk')

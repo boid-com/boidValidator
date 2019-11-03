@@ -29,7 +29,7 @@ async function handleDevice (device, globals) {
   {workUnits(where:{deviceId:${deviceID} validatedAt_gt:$roundStart validatedAt_lt:$roundEnd})
   {id receivedTime grantedCredit claimedCredit serverState validateState outcome deviceId workUnitId power}}`,
   { roundStart: globals.round.start, roundEnd: globals.round.end }))
-  if (!workUnits[0]) return []
+  if (!workUnits[0]) return {}
   // logger.info('Getting Device WU', deviceID)
   // logger.info('Found WorkUnits:', workUnits.length)
   const parsedUnits = await parseUnits(workUnits, device.id, globals)
