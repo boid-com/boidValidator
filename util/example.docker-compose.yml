@@ -9,10 +9,8 @@ services:
         max-size: "10m"
     restart: always
     ports: # Uncomment only one line
-    # Exposed to localhost only
-    - "127.0.0.1:4466:4466"
-    # Exposed externally, make sure you have firewall or managementApiSecret implemented
-    #- "4466:4466"
+    - "127.0.0.1:4466:4466" # Exposed to localhost only
+    #- "4466:4466" # Exposed externally, make sure you have firewall or managementApiSecret implemented
     environment:
       PRISMA_CONFIG: |
         port: 4466
@@ -34,8 +32,8 @@ services:
         max-file: "5"
         max-size: "10m"
     restart: always
-    ports:
-    - "127.0.0.1:5432:5432"
+    # ports:
+    # - "127.0.0.1:5432:5432" #localhost only by default
     environment:
       POSTGRES_USER: prisma
       POSTGRES_PASSWORD: prisma

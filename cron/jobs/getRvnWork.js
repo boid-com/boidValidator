@@ -53,7 +53,7 @@ async function doQuery (worker, ModTime) {
       }
       if (shares.length === 0) return res()
       logger.info('Writing RvnShares to DB...')
-      for (share of shares) {
+      for (var share of shares) {
         await createShareData(share, worker.worker)
       }
       logger.info('Finished writing RvnShares to DB')

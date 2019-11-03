@@ -50,12 +50,12 @@ async function getAccount (apiParams) {
 }
 
 async function updateUnits (workUnits) {
-  for (unit of workUnits) {
+  for (var unit of workUnits) {
     logger.debug(unit)
     const existing = await db.gql(`{workUnit(where:{workUnitId:${parseInt(unit.WorkunitId)}}){id validatedAt}}`)
     if (existing) results.updatedWU++
     else results.newWU++
-    if (unit.ValidateState == 1 && !existing || existing && !existing.validatedAt) unit.validatedAt = new Date().toISOString()
+    if ((unit.ValidateState === 1 && !existing) || (existing && !existing.validatedAt)) unit.validatedAt = new Date().toISOString()
     if (unit.ReportDeadline) unit.ReportDeadline = new Date(Date.parse(unit.ReportDeadline)).toISOString()
     if (unit.SentTime) unit.SentTime = new Date(Date.parse(unit.SentTime)).toISOString()
     if (unit.ReceivedTime) unit.ReceivedTime = new Date(Date.parse(unit.ReceivedTime)).toISOString()

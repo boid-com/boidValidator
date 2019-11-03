@@ -13,8 +13,8 @@ async function init () {
     const protocols = await db.gql('{protocols{type name}}')
     for (p of protocols) {
       const protocolDevices = await boidjs.get.protocolDevices(p.type)
-      logger.info(p.name,protocolDevices.length)
-      for (d of protocolDevices) {
+      logger.info(p.name, protocolDevices.length)
+      for (var d of protocolDevices) {
         numDevices++
         const nameSplit = d.device_name.split('_')
         const protocol = parseInt(nameSplit[0])

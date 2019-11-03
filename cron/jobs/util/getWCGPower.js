@@ -5,7 +5,7 @@ const logger = require('logging').default('getWCGPower')
 async function parseUnits (workUnits, deviceId, globals) {
   var results = []
   var mutations = []
-  for (unit of workUnits) {
+  for (var unit of workUnits) {
     unit.power = 0
     unit.pending = 0
     if (unit.serverState === 5 && unit.outcome === 1 && unit.validateState === 1) {
@@ -23,7 +23,7 @@ async function parseUnits (workUnits, deviceId, globals) {
   return results
 }
 
-async function handleDevice(device,globals) {
+async function handleDevice (device, globals) {
   const deviceID = parseInt(device.wcgid)
   var workUnits = (await db.gql(`query($roundStart:DateTime $roundEnd:DateTime)
   {workUnits(where:{deviceId:${deviceID} validatedAt_gt:$roundStart validatedAt_lt:$roundEnd})
@@ -35,14 +35,14 @@ async function handleDevice(device,globals) {
   const parsedUnits = await parseUnits(workUnits, device.id, globals)
   logger.info('')
   const power = parsedUnits.reduce((a, el) => a + el.power, 0)
-  return { power, units:parsedUnits.length, key:device.key , protocolType:globals.protocols.wcg.type, owner:device.owner }
+  return { power, units: parsedUnits.length, key: device.key, protocolType: globals.protocols.wcg.type, owner: device.owner }
 }
 
 async function boincFindPower (devices, globals) {
   try {
     logger.info('got wcg devices', devices.length)
     if (!globals.protocols.wcg) return
-    const powerRatings = await Promise.all(devices.map(device => handleDevice(device,globals)))
+    const powerRatings = await Promise.all(devices.map(device => handleDevice(device, globals)))
     return powerRatings
   } catch (error) {
     logger.error(error)
