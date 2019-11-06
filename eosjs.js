@@ -4,13 +4,13 @@ const { JsSignatureProvider } = require('eosjs/dist/eosjs-jssig')
 const fetch = require('node-fetch')
 const { TextEncoder, TextDecoder } = require('util')
 
-function init (keys,endpoint) {
+function init (keys, endpoint) {
   if (!keys) keys = [env.validator.key]
   if (!endpoint) endpoint = env.eosRPCEndpoint
   const signatureProvider = new JsSignatureProvider(keys)
   const rpc = new JsonRpc(endpoint, { fetch })
   const api = new Api({ rpc, signatureProvider, textDecoder: new TextDecoder(), textEncoder: new TextEncoder() })
-  const boidjs = require('boidjs')({rpc}) 
+  const boidjs = require('boidjs')({ rpc })
   return { rpc, api, boidjs }
 }
 

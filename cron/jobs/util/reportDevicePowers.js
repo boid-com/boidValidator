@@ -14,9 +14,7 @@ function constructActions (powerRatings, globals) {
     // console.log(rating)
     return boidjs.tx.maketx(
       {
-        auth,
-        account,
-        name,
+        auth, account, name,
         data: {
           validator: env.validator.auth.accountName,
           device_key: rating.key,
@@ -48,9 +46,7 @@ async function init (powerRatings, globals) {
             el.message.indexOf("transaction declares authority '${auth}', but does not have signatures for it.") > -1) ||
             (el.message.indexOf('Validator attempting to rewrite validation for this round') > -1 && powerRatings.length > 1)) {
           logger.error('Will run this TX again...')
-          for (var rating of powerRatings) {
-            await init([rating], globals)
-          }
+          for (var rating of powerRatings) { await init([rating], globals) }
         }
       }
     })
@@ -58,17 +54,17 @@ async function init (powerRatings, globals) {
       const powerReport = await db.gql(`mutation{ createPowerReport(
         data:{ txid:"${result.transaction_id}" txMeta:"${result}" round:{connect:{id:"${globals.round.id}"}}
         }){id}}`)
-      console.log(powerReport)
-      const ratings = await db.client.request(`mutation {`+ powerRatings.map( rating => {
+      // console.log(powerReport)
+      const ratings = await db.client.request('mutation {' + powerRatings.map(rating => {
         return `h${rating.key}:createPowerRating( data:{ round:{connect:{id:"${globals.round.id}"}} power:${rating.power} units:${rating.units}
           device:{connect:{key:"${rating.key}"}}
           report:{connect:{id:"${powerReport.id}"}}
         }){id round{id}}`
-      }).join(' ') + `}`)
-      console.log(ratings)
+      }).join(' ') + '}')
+      // console.log(ratings)
     }
-    if (!result) return {error}
-    else return {result}
+    if (!result) return { error }
+    else return { result }
   } catch (error) {
     logger.error(error.message)
     logger.error('There was a problem reporting work units, waiting 30 seconds and trying again...')

@@ -63,7 +63,7 @@ const mutation = async (gqli, vars, type, db) => {
   return gql(gqli, vars, type, db)
 }
 
-function batch ({type, query, vars, batchSize}, thisClient) {
+function batch ({ type, query, vars, batchSize }, thisClient) {
   const emitter = new EventEmitter()
   if (!thisClient) var client = dbClient
   else var client = thisClient
@@ -77,7 +77,7 @@ function batch ({type, query, vars, batchSize}, thisClient) {
     vars.i = i
     getData(type, query, vars, client).then((data) => {
       if (data) {
-        emitter.emit('data',data)
+        emitter.emit('data', data)
         data.forEach((el) => { results.push(el) })
         i += batchSize
         loop()
