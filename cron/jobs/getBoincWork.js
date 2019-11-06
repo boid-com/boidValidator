@@ -16,11 +16,12 @@ function eH (error) {
   logger.error(error)
   errors.push(error)
 }
+var apiParams = { Limit: 250, ValidateState: 1 }
+var apiURL = 'https://www.worldcommunitygrid.org/api/members/boid.com/results?code=' + env.wcg.key
 
-var getData = async function (i, apiParams) {
+
+var getData = async function (i,apiParams) {
   try {
-    var apiURL = 'https://www.worldcommunitygrid.org/api/members/boid.com/results?code=' + env.wcg.key
-    var apiParams = { Limit: 250, ValidateState: 1 }
     var offsetParams = Object.assign(apiParams, {})
     offsetParams.Offset = i
     var result = await ax.get(apiURL, { params: offsetParams })
