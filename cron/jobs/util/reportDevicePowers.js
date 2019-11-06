@@ -3,7 +3,7 @@ const env = require('../../../.env.json')
 const { boidjs, api } = require('../../../eosjs')()
 const ms = require('human-interval')
 const logger = require('logging').default('reportDevicePowers')
-
+const db = require('../../../db')
 const sleep = ms => new Promise(res => setTimeout(res, ms))
 
 function constructActions (powerRatings, globals) {
@@ -19,7 +19,6 @@ function constructActions (powerRatings, globals) {
         name,
         data: {
           validator: env.validator.auth.accountName,
-          account: rating.owner,
           device_key: rating.key,
           round_start: Date.parse(new Date(globals.round.start)) * 1000,
           round_end: Date.parse(new Date(globals.round.end)) * 1000,
@@ -30,14 +29,17 @@ function constructActions (powerRatings, globals) {
       }
     ).actions[0]
   })
+  console.log(actions)
   return actions
 }
 
 async function init (powerRatings, globals) {
   try {
+    var error
     if (powerRatings.length === 0) return
     var actions = constructActions(powerRatings, globals)
     const result = await api.transact({ actions }, boidjs.tx.tapos).catch(async el => {
+      error = el
       // console.log(actions)
       logger.error(el.message)
       if (el.message) {
@@ -52,8 +54,21 @@ async function init (powerRatings, globals) {
         }
       }
     })
-    if (result) console.log(result)
-    return result
+    if (result && result.transaction_id) {
+      const powerReport = await db.gql(`mutation{ createPowerReport(
+        data:{ txid:"${result.transaction_id}" txMeta:"${result}" round:{connect:{id:"${globals.round.id}"}}
+        }){id}}`)
+      console.log(powerReport)
+      const ratings = await db.client.request(`mutation {`+ powerRatings.map( rating => {
+        return `h${rating.key}:createPowerRating( data:{ round:{connect:{id:"${globals.round.id}"}} power:${rating.power} units:${rating.units}
+          device:{connect:{key:"${rating.key}"}}
+          report:{connect:{id:"${powerReport.id}"}}
+        }){id round{id}}`
+      }).join(' ') + `}`)
+      console.log(ratings)
+    }
+    if (!result) return {error}
+    else return {result}
   } catch (error) {
     logger.error(error.message)
     logger.error('There was a problem reporting work units, waiting 30 seconds and trying again...')

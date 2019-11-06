@@ -20,10 +20,15 @@ var errors = []
 async function getGlobals () {
   var now = new Date()
   now.setUTCMinutes(0, 0, 0)
+  now.setUTCHours(0)
+  console.log(Date.parse(now))
   var round = {}
   round.end = now.toISOString()
-  round.start = new Date(Date.parse(round.end) - ms('one hour')).toISOString()
+  round.start = new Date(Date.parse(round.end) - ms('24 hours')).toISOString()
   logger.info('Current Round:', JSON.stringify(round, null, 2))
+  const existingRound = (await db.gql(`{powerRounds(where:{start:"${round.start}" end:"${round.end}"}){id}}`))[0]
+  if (!existingRound) round.id = (await db.gql(`mutation{createPowerRound(data:{start:"${round.start}" end:"${round.end}"}){id}}`)).id
+  else round.id = existingRound.id
   const protocolsArr = await db.gql('{protocols{name difficulty meta type}}')
   var protocols = {}
   protocolsArr.forEach(el => { protocols[el.name] = el })
@@ -32,6 +37,7 @@ async function getGlobals () {
 }
 async function getProtocolDevicePowers (protocolName, globals) {
   try {
+    if (protocolName === 'rvn') return
     var allReports = []
     const protocolDevices = await db.gql(`{devices(where:{protocol:{name:"${protocolName}"}}){ key wcgid rvnid owner }}`)
     const deviceChunks = chunk(protocolDevices.shuffle(), batchSize)

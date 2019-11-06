@@ -6,7 +6,7 @@ module.exports = {
       args: '1',
       restart_delay: 12000,
       autorestart:false,
-      cron_restart:'15 */1 * * *'
+      cron_restart:'15 */6 * * *'
     },
     {
       name: 'getBoincWork',

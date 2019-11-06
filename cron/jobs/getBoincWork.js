@@ -71,7 +71,7 @@ async function init () {
     let ModTime
     const lastRun = (await db.gql(`{ cronRuns( last:1 where: {runtime_not:null job: { name: "getBoincWork" } }) {
       errors runtime createdAt } }`))[0]
-    if (!lastRun || lastRun.errors.length > 0) ModTime = Date.now() - ms('2 hours')
+    if (!lastRun || lastRun.errors.length > 0) ModTime = Date.now() - ms('2 days')
     else ModTime = (Date.parse(lastRun.createdAt)) - ms(env.wcg.queryRedundancy)
     results.queryUpdatedSince = new Date(ModTime).toLocaleString()
     logger.info('')

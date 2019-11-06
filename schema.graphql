@@ -3,6 +3,7 @@ type Device {
   createdAt: DateTime! @createdAt
   protocol: Protocol
   powerRatings: [PowerRating!]!
+  powerReports: [PowerReport!]!
   rvnShares: [ShareData!]!
   workUnits: [WorkUnit!]!
   wcgid: String @unique
