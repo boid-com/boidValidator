@@ -33,40 +33,63 @@ function constructActions (powerRatings, globals) {
 
 async function init (powerRatings, globals) {
   try {
+    var results = {reported:0,missed:0,}
     var error
     if (powerRatings.length === 0) return
     var actions = constructActions(powerRatings, globals)
-    const result = await api.transact({ actions }, boidjs.tx.tapos).catch(async el => {
+    const result = await api.transact({ actions }, boidjs.tx.tapos)
+    .catch(async el => {
       error = el
       // console.log(actions)
-      logger.error(el.message)
+      // if ('Validator attempting to validate for a prior round' > -1) return
+      // logger.error(el.message)
       const msg = el.message
       if (msg) {
-        if ((msg.indexOf('expired transaction') > -1 ||
+        if ((msg.indexOf('attempting to validate for a prior round') > -1) && powerRatings.length === 1) {
+          const rating = powerRatings[0]
+          ++results.missed
+          logger.info('Missed Round for this device:',rating.key)
+          const ratings = await db.gql(`mutation {createPowerRating( data:{ 
+              round:{connect:{id:"${globals.round.id}"}} power:${rating.power} units:${rating.units}
+              device:{connect:{key:"${rating.key}"}} error:"${msg}" }){id round{id}}}`)
+        }
+        else if ((msg.indexOf('expired transaction') > -1 ||
             msg.indexOf('Could not find block') > -1 ||
             msg.indexOf('Transaction expiration is too far in the future') > -1 ||
             msg.indexOf("transaction declares authority '${auth}', but does not have signatures for it.") > -1) ||
-            (msg.indexOf('Validator attempting to rewrite validation for this round') > -1 && powerRatings.length > 1)) {
-          logger.error('Will run this TX again...')
+            (msg.indexOf('attempting to rewrite validation for this round') > -1 && powerRatings.length > 1) ||
+            (msg.indexOf('attempting to validate for a prior round') > -1 && powerRatings.length > 1)
+            ) {
+            logger.error(el.message)
+            logger.error('Will run this TX again...')
           for (var rating of powerRatings) { await init([rating], globals) }
+          return
         }
       }
     })
     if (result && result.transaction_id) {
+      logger.info('Transaction Success:',result.transaction_id)
+      ++results.reported
       const powerReport = await db.gql(`mutation{ createPowerReport(
-        data:{ txid:"${result.transaction_id}" txMeta:"${result}" round:{connect:{id:"${globals.round.id}"}}
+        data:{ 
+          txid:"${result.transaction_id}" 
+          blockDate:"${new Date(result.processed.block_time).toISOString()}"
+          blockNum:${result.processed.block_num}
+          cpuMicroSec:${result.processed.elapsed}
+          round:{connect:{id:"${globals.round.id}"}}
         }){id}}`)
       // console.log(powerReport)
       const ratings = await db.client.request('mutation {' + powerRatings.map(rating => {
-        return `h${rating.key}:createPowerRating( data:{ round:{connect:{id:"${globals.round.id}"}} power:${rating.power} units:${rating.units}
+        return `h${rating.key}:createPowerRating( data:{ 
+          round:{connect:{id:"${globals.round.id}"}} power:${rating.power} units:${rating.units}
           device:{connect:{key:"${rating.key}"}}
           report:{connect:{id:"${powerReport.id}"}}
         }){id round{id}}`
       }).join(' ') + '}')
       // console.log(ratings)
     }
-    if (!result) return { error }
-    else return { result }
+    if (!result) return { error, result:results }
+    else return { result:results }
   } catch (error) {
     logger.error(error.message)
     logger.error('There was a problem reporting work units, waiting 30 seconds and trying again...')

@@ -44,6 +44,9 @@ type PowerReport {
   validated: Boolean! @default(value:false)
   txid: String
   txMeta:String
+  blockDate:DateTime
+  blockNum:Int
+  cpuMicroSec:Int
 }
 
 type PowerRating {
@@ -54,6 +57,7 @@ type PowerRating {
   device: Device
   round: PowerRound
   report: PowerReport
+  error: String
 }
 
 type CronJob {

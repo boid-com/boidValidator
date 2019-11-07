@@ -39,7 +39,7 @@ async function getProtocolDevicePowers (protocolName, globals) {
     var allReports = []
     const protocolDevices = (await db.gql(`{devices(
       where:{protocol:{name:"${protocolName}"}}){ key wcgid rvnid owner 
-        powerRatings(where:{
+        powerRatings(first:1 where:{
           round:{start:"${globals.round.start}" end:"${globals.round.end}" }}){id}}}`))
     .filter(el => !el.powerRatings[0])
     // logger.info("Found Protocol Devices without Rating for this round:",protocolDevices.length)
