@@ -33,7 +33,7 @@ async function handleDevice (device, globals) {
   // logger.info('Getting Device WU', deviceID)
   // logger.info('Found WorkUnits:', workUnits.length)
   const parsedUnits = await parseUnits(workUnits, device.id, globals)
-  logger.info('')
+  // logger.info('')
   const power = parsedUnits.reduce((a, el) => a + el.power, 0)
   return { power, units: parsedUnits.length, key: device.key, protocolType: globals.protocols.wcg.type, owner: device.owner }
 }

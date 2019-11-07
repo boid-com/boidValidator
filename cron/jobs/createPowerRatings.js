@@ -32,19 +32,23 @@ async function getGlobals () {
   const protocolsArr = await db.gql('{protocols{name difficulty meta type}}')
   var protocols = {}
   protocolsArr.forEach(el => { protocols[el.name] = el })
-
   return { round, protocols }
 }
 async function getProtocolDevicePowers (protocolName, globals) {
   try {
-    if (protocolName === 'rvn') return
     var allReports = []
-    const protocolDevices = await db.gql(`{devices(where:{protocol:{name:"${protocolName}"}}){ key wcgid rvnid owner }}`)
+    const protocolDevices = (await db.gql(`{devices(
+      where:{protocol:{name:"${protocolName}"}}){ key wcgid rvnid owner 
+        powerRatings(where:{
+          round:{start:"${globals.round.start}" end:"${globals.round.end}" }}){id}}}`))
+    .filter(el => !el.powerRatings[0])
+    // logger.info("Found Protocol Devices without Rating for this round:",protocolDevices.length)
+    
     const deviceChunks = chunk(protocolDevices.shuffle(), batchSize)
     var makePowerReports
     if (protocolName === 'rvn') makePowerReports = getRVNPower
     else if (protocolName === 'wcg') makePowerReports = getWCGPower
-    console.log(deviceChunks)
+    // console.log(deviceChunks)
     for (var iChunk of deviceChunks) {
       // console.log('Chunk')
       const powerReports = await makePowerReports(iChunk, globals)

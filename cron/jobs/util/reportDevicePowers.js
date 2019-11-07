@@ -27,7 +27,7 @@ function constructActions (powerRatings, globals) {
       }
     ).actions[0]
   })
-  console.log(actions)
+  // console.log(actions)
   return actions
 }
 
@@ -40,11 +40,13 @@ async function init (powerRatings, globals) {
       error = el
       // console.log(actions)
       logger.error(el.message)
-      if (el.message) {
-        if ((el.message.indexOf('expired transaction') > -1 ||
-            el.message.indexOf('Could not find block') > -1 ||
-            el.message.indexOf("transaction declares authority '${auth}', but does not have signatures for it.") > -1) ||
-            (el.message.indexOf('Validator attempting to rewrite validation for this round') > -1 && powerRatings.length > 1)) {
+      const msg = el.message
+      if (msg) {
+        if ((msg.indexOf('expired transaction') > -1 ||
+            msg.indexOf('Could not find block') > -1 ||
+            msg.indexOf('Transaction expiration is too far in the future') > -1 ||
+            msg.indexOf("transaction declares authority '${auth}', but does not have signatures for it.") > -1) ||
+            (msg.indexOf('Validator attempting to rewrite validation for this round') > -1 && powerRatings.length > 1)) {
           logger.error('Will run this TX again...')
           for (var rating of powerRatings) { await init([rating], globals) }
         }
