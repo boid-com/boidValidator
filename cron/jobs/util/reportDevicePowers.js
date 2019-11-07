@@ -63,7 +63,6 @@ async function init (powerRatings, globals) {
             logger.error(el.message)
             logger.error('Will run this TX again...')
           for (var rating of powerRatings) { await init([rating], globals) }
-          return
         }
       }
     })
