@@ -41,7 +41,7 @@ async function getProtocolDevicePowers (protocolName, globals) {
       where:{protocol:{name:"${protocolName}"}}){ key wcgid rvnid owner 
         powerRatings(first:1 where:{
           round:{start:"${globals.round.start}" end:"${globals.round.end}" }}){id}}}`))
-      .filter(el => !el.powerRatings[0])
+      // .filter(el => !el.powerRatings[0])
     // logger.info("Found Protocol Devices without Rating for this round:",protocolDevices.length)
 
     const deviceChunks = chunk(protocolDevices.shuffle(), batchSize)
