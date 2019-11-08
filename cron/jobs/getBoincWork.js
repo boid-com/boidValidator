@@ -59,6 +59,7 @@ async function getAccount (apiParams) {
     // logger.info('\n')
     return allData
   } catch (error) {
+    logger.error("Check the wcgKey in .env.json")
     eH(error)
     return null
   }
