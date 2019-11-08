@@ -74,11 +74,10 @@ async function init (powerRatings, globals) {
         data:{ 
           txid:"${result.transaction_id}" 
           blockDate:"${new Date(result.processed.block_time).toISOString()}"
-          txMeta:"${JSON.stringify(result.processed,null,2)}"
           blockNum:${result.processed.block_num}
           cpuMicroSec:${result.processed.elapsed}
           round:{connect:{id:"${globals.round.id}"}}
-        }){id}}`)
+        }){id}}`).catch(logger.error)
       // console.log(powerReport)
       const ratings = await db.client.request('mutation {' + powerRatings.map(rating => {
         return `h${rating.key}:createPowerRating( data:{ 
@@ -86,7 +85,7 @@ async function init (powerRatings, globals) {
           device:{connect:{key:"${rating.key}"}}
           report:{connect:{id:"${powerReport.id}"}}
         }){id round{id}}`
-      }).join(' ') + '}')
+      }).join(' ') + '}').catch(logger.error)
       // console.log(ratings)
     }
     if (!result) return { error, result: results }
