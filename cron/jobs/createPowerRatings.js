@@ -55,8 +55,8 @@ async function getProtocolDevicePowers (protocolName, globals) {
       allReports.push(reportDevicePowers(powerReports.filter(el => el.power > 0), globals))
     }
     const reportsList = (await Promise.all(allReports)).filter(el => el)
-    logger.info('Finished all reports for ', protocolName)
-    return { protocolName, reportsList }
+    logger.info('Finished all reports for ', protocolName,reporstList.length)
+    return { results:{protocolName, reportsList} }
   } catch (error) {
     logger.error(error)
     return { errors: [error] }
