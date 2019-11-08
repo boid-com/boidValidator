@@ -64,7 +64,7 @@ async function doQuery (req) {
     addToGreylist(endpoint)
     return doQuery(req)
   } else {
-    response.setHeader('RPCProxyEndpoint',endpoint)
+    // response.setHeader('RPCProxyEndpoint',endpoint)
     return response
   }
 }
