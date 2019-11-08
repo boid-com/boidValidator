@@ -14,13 +14,12 @@ var results = {
 var errors = []
 function eH (error) {
   logger.error(error)
-  errors.push(error)
+  errors.push(error.toString())
 }
 var apiParams = { Limit: 250, ValidateState: 1 }
 var apiURL = 'https://www.worldcommunitygrid.org/api/members/boid.com/results?code=' + env.wcg.key
 
-
-var getData = async function (i,apiParams) {
+var getData = async function (i, apiParams) {
   try {
     var offsetParams = Object.assign(apiParams, {})
     offsetParams.Offset = i
@@ -113,7 +112,3 @@ async function init () {
 }
 module.exports = init
 if (require.main === module && process.argv[2] === 'dev') init().catch(logger.info)
-
-// init()
-// const ModTime = (Date.now() - ms('one hour'))/1000
-// logger.info(ModTime)

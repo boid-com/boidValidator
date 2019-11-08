@@ -55,15 +55,18 @@ async function doQuery (req) {
     },
     data: req.body
   }).catch((err) => {
-    console.error('RPC Error:')
-    console.error(endpoint, err.message)
+    logger.error('RPC Error:')
+    logger.error(endpoint, err.message)
     addToGreylist(endpoint)
   })
   if (!response || !isObject(response.data)) {
     await sleep(1000)
     addToGreylist(endpoint)
     return doQuery(req)
-  } else return response
+  } else {
+    response.setHeader('RPCProxyEndpoint',endpoint)
+    return response
+  }
 }
 
 async function init () {
