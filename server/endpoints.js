@@ -17,7 +17,6 @@ module.exports = [
   'https://api.eostitan.com',
   'https://mainnet.eoscanada.com',
   'https://api.redpacketeos.com',
-  'https://eos-mainnet.eosblocksmith.io:443',
   'https://bp.cryptolions.io',
   'https://mainnet.get-scatter.com',
   'https://mainnet.genereos.io',

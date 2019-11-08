@@ -60,10 +60,10 @@ async function init (powerRatings, globals) {
             (msg.indexOf('attempting to rewrite validation for this round') > -1 && powerRatings.length > 1) ||
             (msg.indexOf('attempting to validate for a prior round') > -1 && powerRatings.length > 1)
             ) {
-            logger.error(el.message)
+            logger.error(msg)
             logger.error('Will run this TX again...')
           for (var rating of powerRatings) { await init([rating], globals) }
-        }
+        } else logger.error(msg)
       }
     })
     if (result && result.transaction_id) {
