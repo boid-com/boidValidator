@@ -37,6 +37,7 @@ async function init (powerRatings, globals) {
   try {
     var results = { reported: 0, missed: 0 }
     var error
+    logger.info('Ready to report powerRatings:',powerRatings.length)
     if (powerRatings.length === 0) return
     var actions = constructActions(powerRatings, globals)
     const result = await api.transact({ actions }, boidjs.tx.tapos)
@@ -44,7 +45,7 @@ async function init (powerRatings, globals) {
         error = el
         // console.log(actions)
         // if ('Validator attempting to validate for a prior round' > -1) return
-        // logger.error(el.message)
+        logger.error(el.message)
         const msg = el.message
         if (msg) {
           if ((msg.indexOf('attempting to validate for a prior round') > -1) && powerRatings.length === 1) {
@@ -79,7 +80,7 @@ async function init (powerRatings, globals) {
           cpuMicroSec:${result.processed.elapsed}
           round:{connect:{id:"${globals.round.id}"}}
         }){id}}`)
-      // console.log(powerReport)
+      console.log(powerReport)
       const ratings = await db.client.request('mutation {' + powerRatings.map(rating => {
         return `h${rating.key}:createPowerRating( data:{ 
           round:{connect:{id:"${globals.round.id}"}} power:${rating.power} units:${rating.units}
@@ -87,7 +88,7 @@ async function init (powerRatings, globals) {
           report:{connect:{id:"${powerReport.id}"}}
         }){id round{id}}`
       }).join(' ') + '}')
-      // console.log(ratings)
+      console.log(ratings)
     }
     if (!result) return { error, result: results }
     else return { result: results }
