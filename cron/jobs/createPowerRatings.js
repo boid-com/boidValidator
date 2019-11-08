@@ -41,8 +41,8 @@ async function getProtocolDevicePowers (protocolName, globals) {
       where:{protocol:{name:"${protocolName}"}}){ key wcgid rvnid owner 
         powerRatings(first:1 where:{
           round:{start:"${globals.round.start}" end:"${globals.round.end}" }}){id}}}`))
-      // .filter(el => !el.powerRatings[0])
-    // logger.info("Found Protocol Devices without Rating for this round:",protocolDevices.length)
+      .filter(el => !el.powerRatings[0])
+    logger.info("Found Protocol Devices without Rating for this round:",protocolDevices.length)
 
     const deviceChunks = chunk(protocolDevices.shuffle(), batchSize)
     var makePowerReports
@@ -54,7 +54,7 @@ async function getProtocolDevicePowers (protocolName, globals) {
       const powerReports = await makePowerReports(iChunk, globals)
       allReports.push(reportDevicePowers(powerReports.filter(el => el.power > 0), globals))
     }
-    const reportsList = (await Promise.all(allReports))
+    const reportsList = (await Promise.all(allReports)).filter(el => el)
     logger.info('Finished all reports for ', protocolName)
     return { protocolName, reportsList }
   } catch (error) {
