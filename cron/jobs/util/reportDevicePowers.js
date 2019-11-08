@@ -93,6 +93,7 @@ async function init (powerRatings, globals) {
     else return { result: results }
   } catch (error) {
     logger.error(error.message)
+    return {error}
     logger.error('There was a problem reporting work units, waiting 30 seconds and trying again...')
     await sleep(ms('30 seconds'))
     return init(powerRatings, globals)
