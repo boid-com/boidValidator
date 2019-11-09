@@ -87,7 +87,7 @@ async function init (powerRatings, globals) {
           report:{connect:{id:"${powerReport.id}"}}
         }){id round{id}}`
       }).join(' ') + '}')
-      console.log(ratings)
+      // console.log(ratings)
     }
     if (!result) return { error, result: results }
     else return { result: results }
