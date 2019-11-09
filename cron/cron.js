@@ -20,9 +20,9 @@ async function run (jobName) {
     if (run) {
       await db.gql(`mutation($results:Json $errors:Json){updateCronRun(where:{id:"${run.id}"} 
       data:{results:$results errors:$errors runtime:0})
-      {id}}`, { errors: { error: error.message } })
+      {id}}`, { errors: { error: error } })
     }
-    return { run, error: error.message }
+    return { run, error: error }
   }
 }
 

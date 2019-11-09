@@ -45,7 +45,7 @@ async function init (powerRatings, globals) {
         error = el
         // console.log(actions)
         // if ('Validator attempting to validate for a prior round' > -1) return
-        logger.error(el.message)
+        // logger.error(el.message)
         const msg = el.message
         if (msg) {
           if ((msg.indexOf('attempting to validate for a prior round') > -1) && powerRatings.length === 1) {
@@ -66,7 +66,7 @@ async function init (powerRatings, globals) {
             logger.error('Will run this TX again...')
             for (var rating of powerRatings) { await init([rating], globals) }
           } else logger.error(msg)
-        }
+        } else logger.error(el)
       })
     if (result && result.transaction_id) {
       logger.info('Transaction Success:', result.transaction_id)
