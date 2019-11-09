@@ -16,6 +16,7 @@ async function run (jobName) {
       {id}}`, job)
     return { jobName, cronRun, runtime, job }
   } catch (error) {
+    logger.error('CRON ERROR')
     logger.error(error)
     if (run) {
       await db.gql(`mutation($results:Json $errors:Json){updateCronRun(where:{id:"${run.id}"} 
