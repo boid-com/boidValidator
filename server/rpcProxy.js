@@ -60,7 +60,7 @@ async function doQuery (req) {
     addToGreylist(endpoint)
   })
   if (!response || !isObject(response.data)) {
-    logger.error('Unexpected Response:',response.data)
+    if (response) logger.error('Unexpected Response:',response.data)
     await sleep(1000)
     addToGreylist(endpoint)
     return doQuery(req)
