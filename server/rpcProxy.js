@@ -32,7 +32,7 @@ async function addToGreylist (endpoint) {
 }
 
 function isObject (item) {
-  return (typeof item === 'object' && !Array.isArray(item) && item !== null)
+  return (typeof item === 'object' && item !== null)
 }
 
 async function doQuery (req) {
@@ -60,6 +60,7 @@ async function doQuery (req) {
     addToGreylist(endpoint)
   })
   if (!response || !isObject(response.data)) {
+    logger.error('Unexpected Response:',response.data)
     await sleep(1000)
     addToGreylist(endpoint)
     return doQuery(req)
