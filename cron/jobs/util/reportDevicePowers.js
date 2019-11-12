@@ -13,10 +13,7 @@ function constructActions (powerRatings, globals) {
   const actions = powerRatings.map(rating => {
     // console.log(rating)
     return boidjs.tx.maketx(
-      {
-        auth,
-        account,
-        name,
+      { auth, account, name,
         data: {
           validator: env.validator.auth.accountName,
           device_key: rating.key,

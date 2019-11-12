@@ -3,7 +3,7 @@ const logger = require('logging').default('dbCleanup')
 const ms = require('human-interval')
 
 async function init () {
-  var lookback = require('../../.env').cleanupLookback
+  var lookback = require('../../.env').dbCleanupLookback
   if (!lookback) lookback = '4 weeks'
   const sinceTime = new Date(Date.now() - ms(lookback)).toISOString()
   logger.info('Deleting older than:', sinceTime)

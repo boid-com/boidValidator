@@ -15,23 +15,10 @@ Array.prototype.shuffle = function () {
   }
   return this
 }
-var gqlEndpoint
-gqlEndpoint = env.prismaAPI
+var gqlEndpoint = env.prismaAPI
 
-logger.info(env.stage, gqlEndpoint)
-const remoteEndpoint = 'https://api.boid.com/prisma'
 const token = env.prismaJwt
-const client = new GraphQLClient(gqlEndpoint, {
-  headers: {
-    Authorization: 'Bearer ' + token
-  }
-})
-const dbClient = client
-const remoteClient = new GraphQLClient(remoteEndpoint, {
-  headers: {
-    Authorization: 'Bearer ' + token
-  }
-})
+const client = new GraphQLClient(gqlEndpoint, { headers: {Authorization: 'Bearer ' + token}})
 
 async function doMany (commands, db) {
   if (!db) db = client
@@ -45,7 +32,6 @@ async function doMany (commands, db) {
     await sleep(sleeping)
   }
 }
-
 const gql = async (gql, vars, type, db) => {
   try {
     if (!db) db = client
@@ -58,11 +44,6 @@ const gql = async (gql, vars, type, db) => {
     return Promise.reject(error)
   }
 }
-
-const mutation = async (gqli, vars, type, db) => {
-  return gql(gqli, vars, type, db)
-}
-
 function batch ({ type, query, vars, batchSize }, thisClient) {
   const emitter = new EventEmitter()
   if (!thisClient) var client = dbClient
@@ -87,25 +68,9 @@ function batch ({ type, query, vars, batchSize }, thisClient) {
   loop()
   return emitter
 }
-
 var getData = async function (type, query, vars, client) {
   var data = await client.request(query, vars).catch(logger.error)
   return data[type]
 }
 
-const remote = {
-  client: remoteClient,
-  gql (one, two, three) { return gql(one, two, three, remoteClient) },
-  batch (one, two, three, four) { return batch(one, two, three, four, remoteClient) },
-  doMany (one) { return doMany(one, remoteClient) },
-  mutation (one, two, three) { return mutation(one, two, three, remoteClient) }
-}
-
-module.exports = {
-  gql,
-  mutation,
-  batch,
-  client,
-  doMany,
-  remote
-}
+module.exports = { gql, batch, client, doMany }
