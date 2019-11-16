@@ -42,9 +42,9 @@ async function doQuery (req) {
     return doQuery(req)
   }
   console.log('')
-  // logger.info(endpoint)
-  // logger.info(req.body)
-  // logger.info(req.params)
+  logger.info(endpoint)
+  logger.info(req.body)
+  logger.info(req.params)
   const response = await ax({
     url: endpoint + req.originalUrl,
     method: req.method,
