@@ -5,6 +5,8 @@ const ms = require('human-interval')
 const logger = require('logging').default('reportDevicePowers')
 const db = require('../../../db')
 const sleep = ms => new Promise(res => setTimeout(res, ms))
+const dParse = date = Date.parse(new Date(date)) * 1000
+
 
 function constructActions (powerRatings, globals) {
   const auth = env.validator.auth
@@ -15,14 +17,9 @@ function constructActions (powerRatings, globals) {
     return boidjs.tx.maketx(
       { auth, account, name,
         data: {
-          validator: env.validator.auth.accountName,
-          device_key: rating.key,
-          round_start: Date.parse(new Date(globals.round.start)) * 1000,
-          round_end: Date.parse(new Date(globals.round.end)) * 1000,
-          rating: rating.power,
-          units: rating.units,
-          protocol_type: rating.protocolType
-        }
+          validator: env.validator.auth.accountName, device_key: rating.key,
+          round_start: dParse(globals.round.start), round_end:dParse(globals.round.end),
+          rating: rating.power, units: rating.units, protocol_type: rating.protocolType }
       }
     ).actions[0]
   })

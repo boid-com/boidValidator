@@ -42,15 +42,15 @@ async function doQuery (req) {
     return doQuery(req)
   }
   console.log('')
-  logger.info(endpoint)
-  logger.info(req.body)
-  logger.info(req.params)
+  // logger.info(endpoint)
+  // logger.info(req.body)
+  // logger.info(req.params)
   const response = await ax({
     url: endpoint + req.originalUrl,
     method: req.method,
     timeout: 5000,
     validateStatus: function (status) {
-      console.log(status)
+      // console.log(status)
       return status < 501
     },
     data: req.body
@@ -61,9 +61,22 @@ async function doQuery (req) {
   })
   if (!response || !isObject(response.data)) {
     // if (response) logger.error('Unexpected Response:',response.data)
-    await sleep(1000)
     addToGreylist(endpoint)
+    await sleep(1000)
     return doQuery(req)
+  } else if (response.status == 500) {
+    logger.error('')
+    logger.error('500 ERROR')
+    logger.error(JSON.stringify(response.data))
+    logger.error('')
+    logger.error(response.data.error.code)
+    const repeatCodes = [3080006, 3081001, 3010008]
+    if (repeatCodes.find(el => el === response.data.error.code)) {
+      console.log('Found Repeat err code:',response.data.error.code)
+      addToGreylist(endpoint)
+      await sleep(1000)
+      return doQuery(req)
+    } else return response  
   } else {
     // response.setHeader('RPCProxyEndpoint',endpoint)
     return response
@@ -77,7 +90,7 @@ async function init () {
     res.status(response.status)
     res.send(response.data)
   })
-  app.listen(3051, function () { logger.info('rpcProxy listening on port 3051') })
+  app.listen(3051, function () { logger.info('rpcProxy listening on local port 3051') })
 }
 
 init().catch((err) => { logger.error(err.message), process.exit() })
