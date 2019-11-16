@@ -5,7 +5,7 @@ const ms = require('human-interval')
 const logger = require('logging').default('reportDevicePowers')
 const db = require('../../../db')
 const sleep = ms => new Promise(res => setTimeout(res, ms))
-const dParse = date = Date.parse(new Date(date)) * 1000
+const dParse = date => Date.parse(new Date(date)) * 1000
 
 
 function constructActions (powerRatings, globals) {
