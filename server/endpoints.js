@@ -25,6 +25,5 @@ module.exports = [
   'https://api.sheos.org',
   'https://mainnet.eosamsterdam.net',
   'https://api.eosrio.io',
-  'https://eos.eoscafeblock.com',
-  'https://eospublic.chainrift.com'
+  'https://eos.eoscafeblock.com'
 ]

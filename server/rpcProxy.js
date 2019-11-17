@@ -27,8 +27,8 @@ async function addToGreylist (endpoint) {
   const index = greylist.indexOf(endpoint)
   if (index < 0) return
   else greylist.splice(index, 1)
-  logger.info('Removing API from greylist:', endpoint)
-  logger.info('Greylist:', greylist)
+  // logger.info('Removing API from greylist:', endpoint)
+  // logger.info('Greylist:', greylist)
 }
 
 function isObject (item) {
@@ -43,8 +43,8 @@ async function doQuery (req) {
   }
   console.log('')
   logger.info(endpoint)
-  logger.info(req.body)
-  logger.info(req.params)
+  // logger.info(req.body)
+  // logger.info(req.params)
   const response = await ax({
     url: endpoint + req.originalUrl,
     method: req.method,
@@ -70,7 +70,7 @@ async function doQuery (req) {
     logger.error(JSON.stringify(response.data))
     logger.error('')
     logger.error(response.data.error.code)
-    const repeatCodes = [3080006, 3081001, 3010008]
+    const repeatCodes = [3081001, 3010008]
     if (repeatCodes.find(el => el === response.data.error.code)) {
       console.log('Found Repeat err code:',response.data.error.code)
       addToGreylist(endpoint)
