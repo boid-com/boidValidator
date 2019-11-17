@@ -52,14 +52,15 @@ async function init (powerRatings, globals) {
           } else if ((msg.indexOf('expired transaction') > -1 ||
             msg.indexOf('Could not find block') > -1 ||
             msg.indexOf('Transaction expiration is too far in the future') > -1 ||
+            msg.indexOf('body should have required property') > -1 ||
             msg.indexOf("transaction declares authority '${auth}', but does not have signatures for it.") > -1) ||
             (msg.indexOf('attempting to rewrite validation for this round') > -1 && powerRatings.length > 1) ||
             (msg.indexOf('attempting to validate for a prior round') > -1 && powerRatings.length > 1)
           ) {
-            logger.error(msg)
+            logger.error(msg)  
             logger.error('Will run this TX again...')
             for (var rating of powerRatings) { await init([rating], globals) }
-          } else logger.error(msg)
+          } else logger.error(msg,actions)
         } else logger.error(el)
       })
     if (result && result.transaction_id) {
