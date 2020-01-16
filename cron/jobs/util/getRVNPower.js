@@ -25,7 +25,7 @@ async function handleDevice (device, globals) {
   // db.doMany(mutations)
   const power = parsedShares.reduce((acc, share) => acc + share.power, 0)
   const units = parsedShares.length
-  return { power, units, key: device.key, protocolType: globals.protocols.rvn.type, owner: device.owner }
+  return { power, units, key: device.key, protocolType: globals.protocols.rvn.type, owner: device.owner, name:device.name }
 }
 
 async function rvnFindPower (devices, globals) {

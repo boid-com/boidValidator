@@ -17,7 +17,7 @@ function constructActions (powerRatings, globals) {
     return boidjs.tx.maketx(
       { auth, account, name,
         data: {
-          validator: env.validator.auth.accountName, device_key: rating.key,
+          validator: env.validator.auth.accountName, device_name: rating.name,
           round_start: dParse(globals.round.start), round_end:dParse(globals.round.end),
           rating: rating.power, units: rating.units, protocol_type: rating.protocolType }
       }

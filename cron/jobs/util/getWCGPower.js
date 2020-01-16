@@ -35,7 +35,7 @@ async function handleDevice (device, globals) {
   const parsedUnits = await parseUnits(workUnits, device.id, globals)
   // logger.info('')
   const power = parsedUnits.reduce((a, el) => a + el.power, 0)
-  return { power, units: parsedUnits.length, key: device.key, protocolType: globals.protocols.wcg.type, owner: device.owner }
+  return { power, units: parsedUnits.length, key: device.key, protocolType: globals.protocols.wcg.type, owner: device.owner, name: device.name }
 }
 
 async function boincFindPower (devices, globals) {
