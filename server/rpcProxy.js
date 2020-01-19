@@ -18,14 +18,14 @@ var greylist = []
 
 async function addToGreylist (endpoint) {
   const existing = greylist.indexOf(endpoint)
-  if (existing > -1) return
+  if(existing > -1) return
   logger.info('Greylisting API and picking new endpoint.', endpoint)
   greylist.push(endpoint)
   logger.info('Greylist:', greylist)
 
   await sleep(30000)
   const index = greylist.indexOf(endpoint)
-  if (index < 0) return
+  if(index < 0) return
   else greylist.splice(index, 1)
   // logger.info('Removing API from greylist:', endpoint)
   // logger.info('Greylist:', greylist)
@@ -37,7 +37,7 @@ function isObject (item) {
 
 async function doQuery (req) {
   const endpoint = pickEndpoint()
-  if (!endpoint) {
+  if(!endpoint) {
     await sleep(10000)
     return doQuery(req)
   }
@@ -59,24 +59,24 @@ async function doQuery (req) {
     logger.error(endpoint, err.message)
     addToGreylist(endpoint)
   })
-  if (!response || !isObject(response.data)) {
+  if(!response || !isObject(response.data)) {
     // if (response) logger.error('Unexpected Response:',response.data)
     addToGreylist(endpoint)
     await sleep(1000)
     return doQuery(req)
-  } else if (response.status == 500) {
+  } else if(response.status == 500) {
     logger.error('')
     logger.error('500 ERROR')
     logger.error(JSON.stringify(response.data))
     logger.error('')
     logger.error(response.data.error.code)
     const repeatCodes = [3081001, 3010008]
-    if (repeatCodes.find(el => el === response.data.error.code)) {
-      console.log('Found Repeat err code:',response.data.error.code)
+    if(repeatCodes.find(el => el === response.data.error.code)) {
+      console.log('Found Repeat err code:', response.data.error.code)
       addToGreylist(endpoint)
       await sleep(1000)
       return doQuery(req)
-    } else return response  
+    } else return response
   } else {
     // response.setHeader('RPCProxyEndpoint',endpoint)
     return response
@@ -86,7 +86,7 @@ async function doQuery (req) {
 async function init () {
   app.all('*', async (req, res) => {
     const response = await doQuery(req)
-    for (const header of Object.entries(response.headers)) { res.setHeader(header[0], header[1]) }
+    for(const header of Object.entries(response.headers)) { res.setHeader(header[0], header[1]) }
     res.status(response.status)
     res.send(response.data)
   })
