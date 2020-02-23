@@ -24,7 +24,8 @@ async function init () {
         }
         await db.gql(`
             mutation{upsertDevice(
-              where:{name:"${d.device_name}"} update:{owner:"${d.owner}"}
+              where:{name:"${d.device_name}"} 
+              update:{owner:"${d.owner}"}
               create:{ key:"${d.device_key}" owner:"${d.owner}" name:"${d.device_name}" ${populateMeta()} protocol:{connect:{type:${protocol}}} }
             ){id}}`).catch(err => errors.push(err))
       }
