@@ -12,6 +12,6 @@
     "VIG":1.0000
   },
   "min_cpu_us":100000,
-  "cpu_check_interval_ms":3.6e+5,
-  "job_poll_interval":3.6e+4
+  "cpu_check_interval_ms":1200000,
+  "job_poll_interval":600000
 }
