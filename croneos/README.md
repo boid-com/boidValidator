@@ -6,7 +6,7 @@ Copy the example config to customize your own.
 ```
 cd croneos
 cp ./example.miner_config.json ./miner_config.json
-cp ./example.ecosystem.config ./example.ecosystem.config
+cp ./example.ecosystem.config ./ecosystem.config
 
 ```
 Modify the config file by filling in your private key, account name and permission. You can use the same account/permissions as your validator or it could be a different account.
