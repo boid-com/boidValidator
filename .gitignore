@@ -2,7 +2,7 @@ docker-compose.yml
 .env.json
 ecosystem.config.js
 grafana/data
-
+miner_config.json
 # Logs
 logs
 *.log

@@ -3,5 +3,10 @@
     "group":1,
     "sleep":"0 minutes",
     "jobs":["getProtocols","getDevices","createPowerRatings","dbCleanup"]
+  },
+  {
+    "group":2,
+    "sleep":"0 minutes",
+    "jobs":["runAutoClaims"]
   }
 ]

@@ -1,0 +1,17 @@
+{
+  "croneos_contract": "cron.eos",
+  "scope": "cron.eos",
+  "miner_account": "",
+  "miner_auth": "",
+  "rpc_nodes": ["http://localhost:3051"],
+  "mining_pool_permissions":[],
+  "permissionPrivateKey":"",
+  "min_fee":{
+    "EOS":0.0001,
+    "BOID":1.0000,
+    "VIG":1.0000
+  },
+  "min_cpu_us":100000,
+  "cpu_check_interval_ms":3.6e+5,
+  "job_poll_interval":3.6e+4
+}

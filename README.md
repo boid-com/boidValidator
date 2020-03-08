@@ -90,6 +90,8 @@ PM2 will now daemonize the tasks and run it in the background. When the task cra
 This Json is an array of groups. The jobs are in the /cron/jobs folder. Jobs in a group are run sequentially, but you can run multiple groups in parallel to customize and optimize your validator node jobs.
 
 
+### Setup Croneos
+View the readme in the croneos folder for more instructions.
 
 ### Performance tweaks
 
@@ -109,6 +111,7 @@ Sometimes during testing you want to easily reset your database. I have included
 ```
 sudo sh ./util/resetAll.sh
 ```
+
 
 ### Join the Validators community
 https://community.boid.com/c/validators

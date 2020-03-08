@@ -1,6 +1,6 @@
 
 const env = require('../../../.env.json')
-const { boidjs, api } = require('../../../eosjs')()
+const { boidjs, api } = require('../../../eosjs')([env.validator.permissionPrivateKey])
 const ms = require('human-interval')
 const logger = require('logging').default('reportDevicePowers')
 const db = require('../../../db')
