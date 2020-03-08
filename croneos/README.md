@@ -16,6 +16,9 @@ You can also customize your minimum gas fee and interval parameters.
 **min_cpu_us** is the minium (in microseconds) amount of CPU you would like to maintain on the account. If your available CPU dips below this number then the miner will pause and wait for CPU to be restored. This is a good option to ensure that you retain enough CPU to make power reports.
 
 ```
+npm i 
 pm2 start
 ```
+You might need to run npm i --unsafe-perm=true --allow-root due to one of the dependencies throwing a warning.
+
 This will start the croneos miner and reward claim jobs. By default the claim job will run once per day to claim your gas fee rewards.
