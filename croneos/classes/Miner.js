@@ -45,6 +45,7 @@ class Miner {
       console.log('[checkMinCPU]'.cyan,'Available CPU: '+ availableCPU)
       if (availableCPU < CONF.min_cpu_us) this.paused = true
       else this.paused = false
+      console.log('Paused:',this.paused)
     } catch (error) {
       console.error(error.toString())
       return this.paused = false
