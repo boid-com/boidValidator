@@ -70,7 +70,7 @@ async function doQuery (req) {
     logger.error(JSON.stringify(response.data))
     logger.error('')
     logger.error(response.data.error.code)
-    const repeatCodes = [3081001, 3010008]
+    const repeatCodes = [3081001, 3010008,3015010]
     if(repeatCodes.find(el => el === response.data.error.code)) {
       console.log('Found Repeat err code:', response.data.error.code)
       addToGreylist(endpoint)
