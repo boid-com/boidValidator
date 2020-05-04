@@ -48,7 +48,7 @@ async function doQuery (req) {
   const response = await ax({
     url: endpoint + req.originalUrl,
     method: req.method,
-    timeout: 5000,
+    timeout: 25000,
     validateStatus: function (status) {
       // console.log(status)
       return status < 501
