@@ -26,12 +26,7 @@ async function createShareData (share, deviceId) {
     mutation($time:DateTime!){
       upsertShareData(
         where:{shareHash:"${shareHash}"}
-        update:{
-          difficulty: ${share.shares / 10000}
-          shareDifficulty: ${share.shares / 10000}
-          time:$time
-
-        }
+        update:{}
         create:{
           shareHash: "${shareHash}"
           shareId: ${shareId}
