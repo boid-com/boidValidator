@@ -21,7 +21,7 @@ async function createShareData (share, deviceId) {
   // else valid = false
   const time = new Date(share.date * 1000)
   const shareHash = hash(JSON.stringify(share), { alg: 'rsa-sha1' })
-  const shareId = parseInt(RegExp.Replace(shareHash, "[^0-9.]", ""))
+  const shareId = parseInt(shareHash.replace(/\D/g,'').substr(0,5))
   const result = db.gql(`
     mutation($time:DateTime!){
       upsertShareData(
