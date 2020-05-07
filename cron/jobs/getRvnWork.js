@@ -19,7 +19,7 @@ async function createShareData (share, deviceId) {
   var valid
   // if (share.valid = 1) valid = true
   // else valid = false
-  const time = new Date(share.date * 1000)
+  const time = new Date(share.date)
   const shareHash = hash(JSON.stringify(share), { alg: 'rsa-sha1' })
   const shareId = parseInt(shareHash.replace(/\D/g,'').substr(0,5))
   const result = db.gql(`
