@@ -31,8 +31,8 @@ async function createShareData (share, deviceId) {
           shareId: ${parseInt(shareHash)}
           valid: true
           time:$time
-          difficulty: ${share.shares * 1000}
-          shareDifficulty: ${share.shares * 1000}
+          difficulty: ${share.shares / 1000}
+          shareDifficulty: ${share.shares / 1000}
           deviceId: "${deviceId}"
         }
       ){time}
