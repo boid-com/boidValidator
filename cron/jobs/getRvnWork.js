@@ -46,9 +46,10 @@ async function doQuery (worker, ModTime) {
     try {
       try {
         logger.info('Getting RvnShares...')
+        logger.info('only getting after:',ModTime)
         var shares = (await ax.get(`/hashratechart/${rvnAddress}/${worker.id}`)).data.data
         .map(el => { 
-          el.date = parseInt(el.data)*1000
+          el.date = parseInt(el.date)*1000
           return el
         }).filter(el => parseInt(el.date)*1000 > ModTime)
         console.log(shares)
