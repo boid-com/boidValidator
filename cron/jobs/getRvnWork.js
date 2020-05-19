@@ -55,7 +55,7 @@ async function doQuery (worker, ModTime) {
           el.date = parseInt(el.date)*1000
           return el
         }).filter(el => parseInt(el.date)*1000 > ModTime)
-        console.log(shares)
+        // console.log(shares
         logger.info('Downloaded RvnShares:', shares.length)
       } catch (error) {
         console.log(error)
