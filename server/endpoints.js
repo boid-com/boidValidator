@@ -7,4 +7,5 @@ module.exports = [
 'https://api.eos.cryptolions.io',
 'https://api.eosarabia.net',
 'https://api.eoseoul.io',
+'https://boid-api-on-eos.animusystems.com:8888'
 ]
