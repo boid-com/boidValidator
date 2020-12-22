@@ -40,7 +40,7 @@ async function handleDevice (device, globals) {
 
 async function boincFindPower (devices, globals) {
   try {
-    logger.info('got wcg devices', devices.length)
+    // logger.info('got wcg devices', devices.length)
     if (!globals.protocols.wcg) return
     const powerRatings = await Promise.all(devices.map(device => handleDevice(device, globals)))
     return powerRatings

@@ -30,7 +30,7 @@ async function handleDevice (device, globals) {
 
 async function rvnFindPower (devices, globals) {
   var rvn
-  logger.info('got rvn devices', devices.length)
+  // logger.info('got rvn devices', devices.length)
   rvn = globals.protocols.rvn
   if (!rvn) return
   try {
