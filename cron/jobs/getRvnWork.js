@@ -4,7 +4,7 @@ const env = require('../../.env.json')
 const sleep = ms => new Promise(res => setTimeout(res, ms))
 const logger = require('logging').default('getRvnWork')
 const ms = require('human-interval')
-const rvnAddress = 'RFwjWWCLbKQQjTtAjwZeRb2HzqT1Jkpfff'
+const rvnAddress = ['RFwjWWCLbKQQjTtAjwZeRb2HzqT1Jkpfff', 'RUAfBFQsh3Z8xDDQXEeXAaqZ2hdEz3s5za']
 
 ax.defaults.timeout = 20000
 // ax.defaults.headers.common['auth'] = ''
@@ -15,13 +15,13 @@ logger.info(ax.defaults.baseURL)
 var hash = require('node-object-hash')({ sort: false, coerce: false }).hash
 var workers
 
-async function createShareData (share, deviceId) {
+async function createShareData(share, deviceId) {
   var valid
   // if (share.valid = 1) valid = true
   // else valid = false
   const time = new Date(share.date)
   const shareHash = hash(JSON.stringify(share), { alg: 'rsa-sha1' })
-  const shareId = parseInt(shareHash.replace(/\D/g,'').substr(0,5))
+  const shareId = parseInt(shareHash.replace(/\D/g, '').substr(0, 5))
   const difficulty = 0.05 * parseInt(share.shares)
   // console.log('Difficulty:',difficulty)
   const result = db.gql(`
@@ -44,41 +44,42 @@ async function createShareData (share, deviceId) {
   return result
 }
 
-async function doQuery (worker, ModTime) {
+async function doQuery(worker, ModTime) {
   return new Promise(async (res, rej) => {
-    try {
+    for (const address of rvnAddress) {
       try {
-        logger.info('Getting RvnShares...')
-        logger.info('only getting after:',ModTime)
-        var shares = (await ax.get(`/hashratechart/${rvnAddress}/${worker.id}`)).data.data
-        .map(el => { 
-          el.date = parseInt(el.date)*1000
-          return el
-        }).filter(el => parseInt(el.date)*1000 > ModTime)
-        // console.log(shares)
-        logger.info('Downloaded RvnShares:', shares.length)
+        try {
+          logger.info('Getting RvnShares...')
+          logger.info('only getting after:', ModTime)
+          var shares = (await ax.get(`/hashratechart/${address}/${worker.id}`)).data.data
+            .map(el => {
+              el.date = parseInt(el.date) * 1000
+              return el
+            }).filter(el => parseInt(el.date) * 1000 > ModTime)
+          // console.log(shares)
+          logger.info('Downloaded RvnShares:', shares.length)
+        } catch (error) {
+          console.log(error)
+          logger.error(error)
+        }
+        if (shares.length === 0) continue
+        logger.info('Writing RvnShares to DB...')
+        for (var share of shares) {
+          await createShareData(share, worker.id)
+        }
+        logger.info('Finished writing RvnShares to DB')
       } catch (error) {
         console.log(error)
-        logger.error(error)
+        logger.info(error)
       }
-      if (shares.length === 0) return res()
-      logger.info('Writing RvnShares to DB...')
-      for (var share of shares) {
-        await createShareData(share, worker.id)
-      }
-      logger.info('Finished writing RvnShares to DB')
-      res()
-    } catch (error) {
-      console.log(error)
-      logger.info(error)
-      rej(error)
     }
+    res()
   }).catch(logger.error)
 }
 
-async function init () {
+async function init() {
   try {
-    workers = (await ax.get('/user/'+rvnAddress)).data.data.workers.filter(el => parseFloat(el.h24) >= 0.1)
+    workers = (await ax.get('/user/' + rvnAddress)).data.data.workers.filter(el => parseFloat(el.h24) >= 0.1)
     logger.info('')
     logger.info('Found', workers.length, 'rvnWorkers')
 
