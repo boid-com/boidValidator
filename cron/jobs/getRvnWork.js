@@ -44,9 +44,8 @@ async function createShareData(share, deviceId) {
   return result
 }
 
-async function doQuery(worker, ModTime) {
+async function doQuery(worker, ModTime,address) {
   return new Promise(async (res, rej) => {
-    for (const address of rvnAddress) {
       try {
         try {
           logger.info('Getting RvnShares...')
@@ -62,7 +61,7 @@ async function doQuery(worker, ModTime) {
           console.log(error)
           logger.error(error)
         }
-        if (shares.length === 0) continue
+        if (shares.length === 0) res()
         logger.info('Writing RvnShares to DB...')
         for (var share of shares) {
           await createShareData(share, worker.id)
@@ -72,29 +71,33 @@ async function doQuery(worker, ModTime) {
         console.log(error)
         logger.info(error)
       }
-    }
     res()
   }).catch(logger.error)
 }
 
 async function init() {
   try {
-    workers = (await ax.get('/user/' + rvnAddress)).data.data.workers.filter(el => parseFloat(el.h24) >= 0.1)
-    logger.info('')
-    logger.info('Found', workers.length, 'rvnWorkers')
+    for (const address of rvnAddress) {
+      try {
+        workers = (await ax.get('/user/' + address)).data.data.workers.filter(el => parseFloat(el.h24) >= 0.1)
+        logger.info('')
+        logger.info('Found', workers.length, 'rvnWorkers')
 
-    let ModTime
-    // const lastRun = (await db.gql(`{ cronRuns( last:1 where: {runtime_not:null job: { name: "getRvnWork" } }) {
-    //   errors runtime createdAt } }`))[0]
-    // if (!lastRun || lastRun.errors.length > 0) ModTime = parseInt(Date.now() - ms('two hours'))
-    // // else ModTime = parseInt(Date.parse(lastRun.createdAt) - ms('one minute'))
-    // logger.info('Getting RvnShares since:', new Date(ModTime).toLocaleString())
-    ModTime = parseInt(Date.now() - ms('two hours'))
-    for (worker of workers) {
-      logger.info('')
-      logger.info('RvnDevice:', worker.id)
-      await doQuery(worker, ModTime)
+        let ModTime
+        ModTime = parseInt(Date.now() - ms('two hours'))
+        for (worker of workers) {
+          logger.info('')
+          logger.info('RvnDevice:', worker.id)
+          await doQuery(worker, ModTime,address)
+        }
+      } catch (error) {
+        console.error(error.toString())
+      }
+    
     }
+
+
+
     logger.info('getRvnWork has finished!')
     return { results: { totalWorkers: workers.length }, errors: [] }
   } catch (error) {
